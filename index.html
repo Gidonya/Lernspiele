@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lernspiele</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Chewy&display=swap">
+<style>
+/* Layout: Kopf mit Titel, darunter ein Abschnitt pro Fach mit großen Spiel-Kacheln */
+:root{
+  --bg:#eef3f6; --paper:#ffffff; --ink:#1f2b38; --muted:#5b6b7a; --line:#cfdbe4;
+  --accent:#2b5f9e; --choc:#7a4a2a;
+  --deutsch:#c2410c; --mathe:#2b5f9e; --hsu:#2f8a4e;
+  --display:"Chewy","Comic Sans MS",cursive; --body:"Andika","Trebuchet MS",Arial,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#141b22; --paper:#1d2630; --ink:#e8eef3; --muted:#9fb0bf; --line:#33424f;
+  --accent:#7fb2ec; --choc:#d79a6c; --deutsch:#fb923c; --mathe:#7fb2ec; --hsu:#6fcf8f; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:20px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:32px}
+h1,h2{font-family:var(--display);font-weight:400;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:clamp(2.6rem,9vw,4rem);color:var(--choc)}
+header p{margin:6px 0 0;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:14px}
+h2{font-size:2rem;display:flex;align-items:center;gap:12px}
+h2 .dot{width:18px;height:18px;border-radius:50%;background:var(--c)}
+h2{color:var(--c)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+a.tile{display:flex;flex-direction:column;gap:6px;background:var(--paper);border:2px solid var(--line);border-radius:16px;
+  padding:18px 20px;text-decoration:none;color:var(--ink);transition:transform .15s,border-color .15s}
+a.tile:hover{border-color:var(--c);transform:translateY(-2px)}
+a.tile:focus-visible{outline:3px solid var(--c);outline-offset:3px}
+.tile .icon{font-size:2.4rem;line-height:1}
+.tile strong{font-family:var(--display);font-weight:400;font-size:1.6rem;color:var(--c)}
+.tile span{font-size:.95rem;color:var(--muted)}
+.tile .tag{font-size:.75rem;text-transform:uppercase;letter-spacing:.1em;font-weight:700;color:var(--muted)}
+.soon{border:2px dashed var(--line);border-radius:16px;padding:18px 20px;color:var(--muted);font-size:1rem}
+@media (prefers-reduced-motion:reduce){a.tile{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Lernspiele</h1>
+    <p>Wähle dein Fach und klicke auf ein Spiel.</p>
+  </header>
+
+  <section style="--c:var(--deutsch)">
+    <h2><span class="dot"></span>Deutsch</h2>
+    <div class="grid">
+      <a class="tile" href="deutsch/tortenklau/">
+        <span class="icon" aria-hidden="true">🎂🔍</span>
+        <span class="tag">Lesespur · Klasse 4</span>
+        <strong>Der Tortenklau</strong>
+        <span>Lies genau und finde im Suchbild die Beweise. Wer hat die Torte geklaut?</span>
+      </a>
+    </div>
+  </section>
+
+  <section style="--c:var(--mathe)">
+    <h2><span class="dot"></span>Mathe</h2>
+    <div class="soon">Hier kommen bald neue Spiele.</div>
+  </section>
+
+  <section style="--c:var(--hsu)">
+    <h2><span class="dot"></span>HSU</h2>
+    <div class="soon">Hier kommen bald neue Spiele.</div>
+  </section>
+</div>
+</body>
+</html>

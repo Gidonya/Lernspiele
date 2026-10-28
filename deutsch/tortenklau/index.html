@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Der Tortenklau</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Chewy&display=swap">
+<style>
+/* Layout: Lesekarte oben, darunter die Suchbild-Karte mit Frage; oben eine Pfotenspur als Fortschritt */
+:root{
+  --bg:#eef3f6; --paper:#ffffff; --ink:#1f2b38; --muted:#5b6b7a;
+  --line:#cfdbe4; --accent:#2b5f9e; --accent-ink:#ffffff;
+  --choc:#7a4a2a; --good:#2f8a4e; --good-bg:#e4f4ea; --bad:#b9472f; --bad-bg:#fbe9e4;
+  --display:"Chewy","Comic Sans MS",cursive; --body:"Andika","Trebuchet MS",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#141b22; --paper:#1d2630; --ink:#e8eef3; --muted:#9fb0bf; --line:#33424f;
+  --accent:#7fb2ec; --accent-ink:#0f1a26; --choc:#d79a6c; --good:#6fcf8f; --good-bg:#1d3226; --bad:#f08a72; --bad-bg:#3a231d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141b22; --paper:#1d2630; --ink:#e8eef3; --muted:#9fb0bf; --line:#33424f;
+  --accent:#7fb2ec; --accent-ink:#0f1a26; --choc:#d79a6c; --good:#6fcf8f; --good-bg:#1d3226; --bad:#f08a72; --bad-bg:#3a231d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:20px;line-height:1.6;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+.wrap{max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2{font-family:var(--display);font-weight:400;letter-spacing:.5px;text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2.2rem,8vw,3.4rem);color:var(--choc)}
+h2{font-size:1.7rem;color:var(--accent)}
+.trail{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:8px 4px}
+.step{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.paw{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;border:2px dashed var(--line);
+  font-family:var(--display);font-size:1.2rem;color:var(--muted);background:var(--paper);transition:transform .3s}
+.step.done .paw{border:2px solid var(--choc);background:var(--choc);color:var(--paper)}
+.step.now .paw{border:2px solid var(--accent);color:var(--accent);transform:scale(1.15)}
+.step small{font-size:.7rem;color:var(--muted)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:22px 24px;display:flex;flex-direction:column;gap:14px}
+.station{font-size:.8rem;text-transform:uppercase;letter-spacing:.12em;color:var(--muted);font-weight:700;margin:0}
+.story p{margin:0 0 .7em;max-width:62ch}
+.story p:last-child{margin:0}
+.q{font-weight:700;font-size:1.15rem;margin:0;display:flex;gap:10px;align-items:flex-start}
+.q .mag{font-size:1.4rem;line-height:1.2}
+button{font:inherit;cursor:pointer}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:12px 22px;font-weight:700;align-self:flex-start}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.status{border-radius:12px;padding:12px 16px;border:2px solid var(--line);font-size:1rem;display:flex;flex-direction:column;gap:10px}
+.status p{margin:0}
+.status.good{border-color:var(--good);background:var(--good-bg)}
+.status.bad{border-color:var(--bad);background:var(--bad-bg)}
+.status h3{margin:0;font-family:var(--display);font-weight:400;font-size:1.5rem}
+.status.good h3{color:var(--good)} .status.bad h3{color:var(--bad)}
+.letter{font-family:var(--display);font-size:2.2rem;color:var(--choc);line-height:1}
+.word{display:flex;gap:6px;flex-wrap:wrap}
+.word span{width:44px;height:52px;border:2px solid var(--choc);border-radius:8px;display:grid;place-items:center;
+  font-family:var(--display);font-size:1.8rem;color:var(--choc);background:var(--paper)}
+.word span.empty{border-style:dashed;border-color:var(--line);color:transparent}
+.intro-art{font-size:3.4rem;line-height:1}
+.meta{color:var(--muted);font-size:.95rem;margin:0}
+.scene{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:#f6e7c8;line-height:0}
+.scene svg{width:100%;height:auto;display:block;touch-action:manipulation}
+.scene .item{cursor:pointer}
+.scene .hit{fill:transparent}
+.scene.locked .item{cursor:default}
+.ring{fill:none;stroke:#2f8a4e;stroke-width:6;animation:pop .35s ease-out}
+.ringcheck{fill:#2f8a4e}
+.cross{stroke:#b9472f;stroke-width:6;stroke-linecap:round;animation:fade 1.2s ease-out forwards}
+@keyframes pop{from{transform-box:fill-box;transform-origin:center;transform:scale(.4);opacity:0}to{transform-box:fill-box;transform-origin:center;transform:scale(1);opacity:1}}
+@keyframes fade{0%{opacity:1}70%{opacity:1}100%{opacity:0}}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@media (max-width:480px){body{font-size:18px}.card{padding:18px 16px}.paw{width:28px;height:28px;font-size:1rem}.step small{display:none}.word span{width:34px;height:42px;font-size:1.4rem}}
+@media (prefers-reduced-motion:reduce){.paw{transition:none}.ring,.shake{animation:none}}
+.home{color:var(--accent);font-weight:700;text-decoration:none;font-size:1rem}.home:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+
+<div class="wrap"><a class="home" href="../../">← Alle Lernspiele</a></div>
+<div class="wrap" id="app"></div>
+
+<script>
+/* target = Gegenstand im Suchbild, den die Kinder anklicken müssen */
+const STATIONS = [
+ {title:"Der leere Teller", letter:"D", target:"muetze", text:[
+  "Es ist Montagmorgen an der Grundschule Am Mühlbach. Heute hat Hausmeister Herr Krümel Geburtstag. Die Klasse 4b hat für ihn eine riesige Schokoladentorte gebacken. Sie hat drei Stockwerke und oben steckt eine Kerze in Form eines Besens.",
+  "Die Torte steht im Werkraum auf dem großen Tisch. Doch als Lea und Can um 9:15 Uhr nachsehen, ist der Teller leer! Nur ein paar Krümel liegen herum.",
+  "„Das ist ein Fall für uns!“, ruft Can und setzt seine karierte Detektivmütze auf. Lea entdeckt eine Spur aus Schokoladenkrümeln. Sie führt zur Tür hinaus."],
+  q:"Was setzt Can auf, bevor die Suche losgeht? Klicke es im Bild an!",
+  wrong:{wollmuetze:"Das ist eine blaue Wollmütze. Can trägt aber eine karierte Detektivmütze!"}},
+ {title:"Ein seltsamer Fund", letter:"E", target:"socke", text:[
+  "Die Krümelspur führt den langen Flur entlang bis zur Treppe. Dort liegt etwas Kleines auf der untersten Stufe: eine rosa Socke mit einem gelben Glitzerstern. Sie ist so winzig, dass sie nicht einmal auf Leas Daumen passt.",
+  "„Komisch“, murmelt Lea. „Wer trägt denn so kleine Socken?“ Can schnuppert daran und verzieht das Gesicht. Die Socke riecht nach Sahne und ein bisschen nach Käse.",
+  "Die Krümel führen nicht nach oben, sondern die Treppe hinunter in den Keller."],
+  q:"Was lag auf der untersten Treppenstufe? Finde es im Bild!",
+  wrong:{handschuh:"Ein Handschuh? Lies noch einmal genau, was auf der Stufe lag!",wollmuetze:"Eine Mütze lag nicht auf der Treppe. Lies noch einmal!",schuh:"Der Turnschuh ist viel zu groß. Gesucht ist etwas Winziges!"}},
+ {title:"Unheimliche Geräusche", letter:"T", target:"eimer", text:[
+  "Im Keller ist es dunkel. Can drückt auf den Lichtschalter, aber die Lampe flackert nur. Plötzlich hören sie ein Geräusch: „Mampf, mampf, schmatz!“",
+  "Lea bekommt eine Gänsehaut. „Ein Monster!“, flüstert Can und versteckt sich hinter Lea. Mutig leuchtet Lea mit ihrer Taschenlampe in die Ecke.",
+  "Es ist nur die alte Waschmaschine von Herrn Krümel, die laut rumpelt und schmatzt. Daneben steht ein grauer Eimer mit Sahneresten. Die Krümel führen weiter zum Heizungsraum."],
+  q:"Was stand im Keller neben der Waschmaschine? Klicke es an!",
+  wrong:{banane:"Das ist der Papierkorb mit einer Bananenschale. Gesucht ist etwas mit Sahne!",tasse:"Die Tasse dampft zwar, aber Sahne ist da nicht drin. Lies noch einmal!"}},
+ {title:"Die Botschaft am Rohr", letter:"E", target:"zettel", text:[
+  "Im Heizungsraum ist es mollig warm. Auf dem Boden entdecken die beiden winzige Fußabdrücke aus Schokolade. Sie sind kleiner als ein Fingernagel.",
+  "„Das sind keine Menschenfüße“, sagt Lea. „Das sind Pfoten!“ Am dicken Heizungsrohr klebt ein gelber Zettel. Die Schrift ist krakelig, als hätte jemand mit Schokolade geschrieben.",
+  "Darauf steht: „Bin beim Sport. P.“ Can kratzt sich am Kopf. „Wer ist denn P.?“"],
+  q:"Was klebte am Heizungsrohr? Finde es im Bild!",
+  wrong:{pfoten:"Die Pfotenspur war auf dem Boden. Gesucht ist, was am Rohr klebte!"}},
+ {title:"Der Mattenberg", letter:"K", target:"kerze", text:[
+  "Die Detektive rennen in die Turnhalle. Dort sind alle blauen Matten zu einem hohen Berg gestapelt. Ganz oben liegt etwas.",
+  "Can klettert hinauf. Es ist die Kerze in Form eines Besens, und sie ist angeknabbert! Neben dem Kasten findet Lea ein paar Holzspäne, wie man sie aus einem Tierkäfig kennt.",
+  "Lea schnippt mit den Fingern. „Ich hab eine Idee! Wer wohnt in unserem Klassenzimmer, liebt Futter und hat einen Namen mit P?“"],
+  q:"Was lag ganz oben auf dem Mattenberg? Tipp: Es liegt auch im Bild ganz oben. Klicke es an!",
+  wrong:{besen:"Das ist ein echter Besen. Gesucht ist die kleine Kerze, die nur so aussieht wie ein Besen!",ball:"Der Basketball ist nur weggerollt. Lies noch einmal!",schuh:"Ein alter Turnschuh lag nicht auf dem Mattenberg."}},
+ {title:"Der leere Käfig", letter:"T", target:"tafel", text:[
+  "Lea und Can sausen in den ersten Stock zu ihrem Klassenzimmer. Es ist Raum 12. An der Tafel steht in großen Buchstaben die Raumnummer. Dort wohnt Professor Pummel, der Klassenhamster.",
+  "Doch die Käfigtür steht offen. Das Laufrad dreht sich noch ein bisschen. Professor Pummel ist weg!",
+  "„P. wie Pummel!“, ruft Can. „Und die rosa Socke ist sein Schlafsack!“ Plötzlich hören die beiden ein lautes „Hicks!“ aus der Ecke des Klassenzimmers."],
+  q:"Woran erkennst du, dass das Bild Raum 12 zeigt? Klicke auf die Stelle mit der Raumnummer!",
+  wrong:{}},
+ {title:"Hicks!", letter:"I", target:"pummel", text:[
+  "Das „Hicks!“ kommt aus der Fundkiste. Darin liegen vergessene Mützen, Turnbeutel und ein grüner Handschuh. Vorsichtig hebt Lea einen Schal hoch.",
+  "Da sitzt Professor Pummel! Er ist kugelrund wie ein Tennisball. Sein Fell ist voller Schokolade und an seiner Nase klebt ein Sahnetupfer. „Hicks!“, macht er noch einmal und lächelt zufrieden.",
+  "Can schaut sich um. „Aber ein Hamster kann doch keine Torte mit drei Stockwerken essen!“ Lea nickt. „Stimmt. Es muss noch einen zweiten Tortendieb geben.“"],
+  q:"Wer hat in der Fundkiste „Hicks!“ gemacht? Klicke ihn an!",
+  wrong:{handschuh:"Der Handschuh liegt zwar in der Fundkiste, aber er kann nicht „Hicks!“ machen!"}},
+ {title:"Der zweite Täter", letter:"V", target:"besen", text:[
+  "In diesem Moment geht die Tür auf. Herr Krümel kommt herein, einen echten Besen in der Hand. Er grinst über das ganze Gesicht. In seinem Schnurrbart hängen Schokoladenkrümel.",
+  "„Habt ihr meinen Hamster-Freund gefunden?“, fragt er und lehnt den Besen an die Wand. „Ich habe heute früh im Werkraum eine Torte entdeckt. Da stand ‚Für Herrn Krümel‘ drauf. Also habe ich sie gegessen. Pummel hat mir ein bisschen geholfen.“",
+  "Lea und Can schauen sich an und prusten los. Der Tortendieb hat einfach sein eigenes Geschenk gefunden! Dann singt die ganze Klasse 4b laut: „Happy Birthday, Herr Krümel!“ Und Pummel macht dazu: „Hicks!“"],
+  q:"Was hatte Herr Krümel in der Hand und hat es an die Wand gelehnt? Klicke es an!",
+  wrong:{kerze:"Das ist die kleine Besen-Kerze. Herr Krümel hatte einen echten, großen Besen!",tasse:"Die Kaffeetasse gehört Frau Huber. Lies noch einmal!"}}
+];
+const STORY_ITEMS = ["muetze","socke","eimer","zettel","kerze","tafel","pummel","besen","pfoten"];
+const TRAP_DEFAULT = "Das kommt in dieser Station nicht vor. Falsche Spur! Lies den Text noch einmal genau.";
+const STORY_DEFAULT = "Das gehört zwar zur Geschichte, aber gerade ist etwas anderes gesucht. Lies die Frage noch einmal!";
+
+const SCENE = `
+<svg viewBox="0 0 1000 650" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Suchbild: Klassenzimmer der 4b">
+ <rect width="1000" height="430" fill="#f6e7c8"/>
+ <rect y="430" width="1000" height="220" fill="#c9a77c"/>
+ <g stroke="#b38f63" stroke-width="2"><line x1="0" y1="480" x2="1000" y2="480"/><line x1="0" y1="540" x2="1000" y2="540"/><line x1="0" y1="600" x2="1000" y2="600"/></g>
+ <rect x="0" y="420" width="1000" height="12" fill="#a8784f"/>
+ <rect x="60" y="50" width="200" height="190" fill="#bfe3f5" stroke="#8a6a4a" stroke-width="8"/>
+ <line x1="160" y1="50" x2="160" y2="240" stroke="#8a6a4a" stroke-width="6"/><line x1="60" y1="145" x2="260" y2="145" stroke="#8a6a4a" stroke-width="6"/>
+ <circle cx="105" cy="95" r="22" fill="#ffe27a"/>
+ <rect x="48" y="238" width="224" height="14" fill="#a8784f"/>
+ <g class="item" data-id="tafel">
+  <rect x="330" y="60" width="380" height="190" fill="#2f4f3e" stroke="#8a6a4a" stroke-width="10"/>
+  <text x="520" y="120" text-anchor="middle" font-family="Chewy, cursive" font-size="34" fill="#f4f4ea">Raum 12 · Klasse 4b</text>
+  <text x="520" y="175" text-anchor="middle" font-family="Chewy, cursive" font-size="26" fill="#f7d6e6">Happy Birthday, Herr Krümel!</text>
+  <text x="520" y="222" text-anchor="middle" font-family="Chewy, cursive" font-size="22" fill="#cfe8d9">3 · 4 = 12</text>
+  <rect class="hit" x="325" y="55" width="390" height="200"/>
+ </g>
+ <rect x="780" y="140" width="180" height="290" fill="#a8784f" stroke="#7a5434" stroke-width="4"/>
+ <line x1="870" y1="140" x2="870" y2="430" stroke="#7a5434" stroke-width="4"/>
+ <circle cx="858" cy="290" r="6" fill="#e6c27a"/><circle cx="882" cy="290" r="6" fill="#e6c27a"/>
+ <rect x="40" y="360" width="230" height="160" fill="#b98b5e" stroke="#7a5434" stroke-width="4"/>
+ <rect x="60" y="250" width="190" height="110" fill="#fbf3e2" stroke="#8b949e" stroke-width="4"/>
+ <g stroke="#8b949e" stroke-width="2">${Array.from({length:12},(_,k)=>`<line x1="${75+k*15}" y1="250" x2="${75+k*15}" y2="360"/>`).join("")}</g>
+ <rect x="62" y="335" width="186" height="23" fill="#e9d29c"/>
+ <circle cx="105" cy="305" r="28" fill="none" stroke="#5a7fa8" stroke-width="5"/><line x1="105" y1="305" x2="105" y2="335" stroke="#5a7fa8" stroke-width="5"/>
+ <path d="M150 335 L150 305 L175 288 L200 305 L200 335 Z" fill="#d9705a"/>
+ <rect x="250" y="270" width="40" height="60" fill="#fbf3e2" stroke="#8b949e" stroke-width="3" transform="skewY(-12)"/>
+ <rect x="300" y="400" width="340" height="22" rx="4" fill="#b07c4f"/>
+ <rect x="318" y="422" width="16" height="150" fill="#9a6a40"/><rect x="606" y="422" width="16" height="150" fill="#9a6a40"/>
+ <path d="M18 560 L80 560 L72 630 L26 630 Z" fill="#7d8b99" stroke="#5b6773" stroke-width="3"/>
+ <g class="item" data-id="besen">
+  <line x1="764" y1="210" x2="734" y2="455" stroke="#8a5a2b" stroke-width="9" stroke-linecap="round"/>
+  <path d="M716 450 L752 450 L762 500 L704 500 Z" fill="#d6a640" stroke="#9c7420" stroke-width="3"/>
+  <g stroke="#9c7420" stroke-width="2"><line x1="720" y1="455" x2="714" y2="498"/><line x1="734" y1="455" x2="733" y2="498"/><line x1="748" y1="455" x2="752" y2="498"/></g>
+  <polygon class="hit" points="752,200 778,206 766,450 768,505 698,505 708,445 724,445"/>
+ </g>
+ <g class="item" data-id="pummel" transform="translate(0,-16)">
+  <ellipse cx="800" cy="505" rx="34" ry="30" fill="#e0b07a"/>
+  <circle cx="776" cy="480" r="10" fill="#e0b07a"/><circle cx="824" cy="480" r="10" fill="#e0b07a"/>
+  <circle cx="776" cy="480" r="5" fill="#f2a6a6"/><circle cx="824" cy="480" r="5" fill="#f2a6a6"/>
+  <circle cx="789" cy="498" r="4" fill="#222"/><circle cx="811" cy="498" r="4" fill="#222"/>
+  <circle cx="800" cy="508" r="4" fill="#e77a8c"/><circle cx="804" cy="503" r="4" fill="#fff"/>
+  <path d="M780 515 q8 6 14 0" stroke="#6b3f22" stroke-width="4" fill="none"/>
+  <circle cx="818" cy="516" r="5" fill="#6b3f22"/>
+  <rect class="hit" x="760" y="465" width="80" height="51"/>
+ </g>
+ <rect x="700" y="500" width="180" height="110" fill="#d9a441" stroke="#a5762a" stroke-width="4"/>
+ <text x="790" y="565" text-anchor="middle" font-family="Chewy, cursive" font-size="24" fill="#7a5420">FUNDKISTE</text>
+ <g class="item" data-id="handschuh" transform="translate(140,0)">
+  <path d="M708 495 l0 40 q0 14 14 14 l14 0 q10 0 10 -12 l0 -36 l-6 -14 l-6 12 l-4 -16 l-6 14 l-4 -14 l-6 14 Z" fill="#4f9a5a" stroke="#2f6a3a" stroke-width="2"/>
+  <rect class="hit" x="702" y="480" width="50" height="74"/>
+ </g>
+ <g class="item" data-id="eimer">
+  <path d="M905 545 L965 545 L958 612 L912 612 Z" fill="#9aa7b4" stroke="#6b7884" stroke-width="3"/>
+  <path d="M908 548 q8 -18 18 -6 q8 -16 18 -2 q10 -14 18 6 Z" fill="#ffffff" stroke="#e1e5ea"/>
+  <path d="M905 545 q30 -40 60 0" fill="none" stroke="#6b7884" stroke-width="3"/>
+  <rect class="hit" x="898" y="505" width="78" height="112"/>
+ </g>
+ <g class="item" data-id="kerze">
+  <rect x="826" y="127" width="70" height="7" rx="3" fill="#f3e3c4" stroke="#b9a07a"/>
+  <path d="M896 122 L930 116 L930 140 L896 136 Z" fill="#d6a640" stroke="#9c7420" stroke-width="2"/>
+  <circle cx="918" cy="115" r="6" fill="#f6e7c8"/><circle cx="928" cy="118" r="5" fill="#f6e7c8"/>
+  <path d="M826 130 q-10 -4 -8 -14 q4 6 8 2 q-2 -8 4 -14 q2 10 2 14 Z" fill="#ff9a3c"/>
+  <rect class="hit" x="806" y="98" width="134" height="48"/>
+ </g>
+ <g class="item" data-id="zettel" transform="rotate(-7 225 290)">
+  <rect x="192" y="266" width="66" height="48" fill="#fff3a8" stroke="#c9b97a" stroke-width="2"/>
+  <rect x="219" y="260" width="12" height="10" fill="#e6b84a"/>
+  <text x="225" y="286" text-anchor="middle" font-family="Andika, sans-serif" font-size="11" fill="#6b3f22">Bin beim</text>
+  <text x="225" y="302" text-anchor="middle" font-family="Andika, sans-serif" font-size="11" fill="#6b3f22">Sport. P.</text>
+  <rect class="hit" x="186" y="255" width="78" height="66"/>
+ </g>
+ <g class="item" data-id="wollmuetze">
+  <path d="M180 238 q0 -36 30 -36 q30 0 30 36 Z" fill="#3e6fb5"/>
+  <rect x="176" y="230" width="68" height="10" rx="4" fill="#2c548c"/>
+  <circle cx="210" cy="200" r="9" fill="#f2f2f2"/>
+  <rect class="hit" x="170" y="188" width="80" height="54"/>
+ </g>
+ <g class="item" data-id="muetze">
+  <ellipse cx="370" cy="398" rx="44" ry="6" fill="#6e5333"/>
+  <path d="M338 398 q0 -38 32 -38 q32 0 32 38 Z" fill="#9b7a50"/>
+  <g stroke="#6e5333" stroke-width="2"><line x1="350" y1="370" x2="350" y2="398"/><line x1="370" y1="361" x2="370" y2="398"/><line x1="390" y1="370" x2="390" y2="398"/><line x1="340" y1="385" x2="400" y2="385"/></g>
+  <circle cx="370" cy="359" r="4" fill="#6e5333"/>
+  <rect class="hit" x="322" y="350" width="96" height="54"/>
+ </g>
+ <g class="item" data-id="floete">
+  <rect x="440" y="390" width="95" height="9" rx="4" fill="#f0e2c0" stroke="#bfa774"/>
+  <g fill="#7a5a33"><circle cx="470" cy="394" r="2"/><circle cx="482" cy="394" r="2"/><circle cx="494" cy="394" r="2"/><circle cx="506" cy="394" r="2"/></g>
+  <rect class="hit" x="434" y="378" width="108" height="26"/>
+ </g>
+ <g class="item" data-id="tasse">
+  <rect x="575" y="368" width="34" height="32" rx="4" fill="#ffffff" stroke="#9aa7b4" stroke-width="2"/>
+  <path d="M609 376 q14 0 14 10 q0 10 -14 10" fill="none" stroke="#9aa7b4" stroke-width="4"/>
+  <path d="M585 360 q-6 -8 0 -16 M597 360 q-6 -8 0 -16" stroke="#c4ccd4" stroke-width="2" fill="none"/>
+  <rect class="hit" x="568" y="340" width="62" height="64"/>
+ </g>
+ <g class="item" data-id="banane">
+  <path d="M30 560 q10 -30 20 -20 q8 -18 18 -2 q12 -4 8 22 Z" fill="#f3d23c" stroke="#b8961a" stroke-width="2"/>
+  <rect class="hit" x="18" y="528" width="66" height="102"/>
+ </g>
+ <g class="item" data-id="ball">
+  <circle cx="150" cy="592" r="26" fill="#e8772e" stroke="#7a3a12" stroke-width="2"/>
+  <path d="M124 592 h52 M150 566 v52 M132 573 q18 19 0 38 M168 573 q-18 19 0 38" stroke="#7a3a12" stroke-width="2" fill="none"/>
+  <rect class="hit" x="120" y="562" width="60" height="60"/>
+ </g>
+ <g class="item" data-id="schuh">
+  <path d="M215 612 l0 -24 q8 -6 18 0 l10 8 q22 4 32 10 q4 6 0 6 Z" fill="#ffffff" stroke="#c0392b" stroke-width="3"/>
+  <line x1="215" y1="606" x2="279" y2="606" stroke="#c0392b" stroke-width="3"/>
+  <rect class="hit" x="208" y="578" width="78" height="40"/>
+ </g>
+ <g class="item" data-id="socke">
+  <path d="M440 562 l14 0 l0 26 q12 2 12 12 q0 8 -10 8 l-12 0 q-6 0 -6 -8 Z" fill="#f4a6c8" stroke="#d26f9a" stroke-width="2"/>
+  <path d="M446 572 l2 4 4 0 -3 3 1 4 -4 -2 -4 2 1 -4 -3 -3 4 0 Z" fill="#ffd84a"/>
+  <rect class="hit" x="428" y="550" width="50" height="68"/>
+ </g>
+ <g class="item" data-id="pfoten" fill="#6b3f22">
+  ${[[520,628],[555,616],[590,630],[625,618],[660,628]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="6" ry="5"/><circle cx="${x-6}" cy="${y-8}" r="2.4"/><circle cx="${x-2}" cy="${y-10}" r="2.4"/><circle cx="${x+2}" cy="${y-10}" r="2.4"/><circle cx="${x+6}" cy="${y-8}" r="2.4"/>`).join("")}
+  <rect class="hit" x="505" y="600" width="170" height="42"/>
+ </g>
+</svg>`;
+
+const WORD = STATIONS.map(s=>s.letter);
+const app = document.getElementById("app");
+let state = {screen:"intro", i:0, found:[], miss:0, solved:false, msg:null};
+
+function esc(s){return s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]))}
+function trail(){
+  return `<nav class="trail" aria-label="Fortschritt">${STATIONS.map((s,k)=>{
+    const cls = k<state.found.length ? "done" : (k===state.i && state.screen==="station" ? "now":"");
+    return `<div class="step ${cls}"><div class="paw">${k<state.found.length?s.letter:k+1}</div><small>Station ${k+1}</small></div>`}).join("")}</nav>`;
+}
+function word(){
+  return `<div class="word" aria-label="Lösungswort">${WORD.map((l,k)=>`<span class="${k<state.found.length?"":"empty"}">${k<state.found.length?l:"·"}</span>`).join("")}</div>`;
+}
+function reset(){state={screen:"intro",i:0,found:[],miss:0,solved:false,msg:null}}
+
+function render(){
+  if(state.screen==="intro"){
+    app.innerHTML = `
+    <header><div class="intro-art" aria-hidden="true">🎂🔍</div><h1>Der Tortenklau</h1></header>
+    <section class="card">
+      <p class="station">Eine Lesespur mit Suchbild für die 4. Klasse</p>
+      <p style="margin:0">Die Geburtstagstorte von Hausmeister Herrn Krümel ist verschwunden! Hilf den Detektiven Lea und Can, den Tortendieb zu finden.</p>
+      <p style="margin:0"><strong>So geht's:</strong> Lies jede Station genau. Unter dem Text ist ein Suchbild. Klicke im Bild auf das Ding, nach dem gefragt wird. Wenn du richtig liegst, bekommst du einen Buchstaben und darfst weiter. Am Ende ergeben alle 8 Buchstaben das Lösungswort.</p>
+      ${word()}
+      <button class="btn" id="start">Fall übernehmen</button>
+    </section>`;
+    document.getElementById("start").onclick=()=>{state.screen="station";render();focusTop()};
+    return;
+  }
+  if(state.screen==="end"){
+    app.innerHTML = `${trail()}
+    <section class="card">
+      <h1>Fall gelöst!</h1>
+      <p style="margin:0">Super gelesen, Detektiv! Der Tortendieb war Herr Krümel selbst, und Professor Pummel hat ein bisschen mitgenascht.</p>
+      <p class="station">Dein Lösungswort</p>
+      ${word()}
+      <p class="meta">${state.miss===0?"Kein einziger Fehlklick. Du bist ein Meisterdetektiv!":`Du hast ${state.miss}-mal auf eine falsche Spur geklickt. Beim nächsten Mal schaffst du es noch genauer!`}</p>
+      <button class="btn" id="again">Noch einmal spielen</button>
+    </section>`;
+    document.getElementById("again").onclick=()=>{reset();render();focusTop()};
+    return;
+  }
+  const s = STATIONS[state.i];
+  let status = "";
+  if(state.solved){
+    status = `<div class="status good" role="status"><h3>Richtig! Gute Spur!</h3>
+      <p>Du findest den Buchstaben <span class="letter">${s.letter}</span></p>
+      <button class="btn" id="next">${state.i<STATIONS.length-1?"Weiter zu Station "+(state.i+2):"Zum Lösungswort"}</button></div>`;
+  } else if(state.msg){
+    status = `<div class="status bad" role="status" id="status"><h3>Falsche Spur!</h3><p>${esc(state.msg)}</p></div>`;
+  } else {
+    status = `<div class="status" role="status" id="status"><p>Klicke im Bild auf die richtige Stelle.</p></div>`;
+  }
+  app.innerHTML = `${trail()}
+  <section class="card">
+    <p class="station">Station ${state.i+1} von ${STATIONS.length}</p>
+    <h2>${s.title}</h2>
+    <div class="story">${s.text.map(p=>`<p>${esc(p)}</p>`).join("")}</div>
+  </section>
+  <section class="card">
+    <p class="q"><span class="mag" aria-hidden="true">🔍</span><span>${esc(s.q)}</span></p>
+    <div class="scene ${state.solved?"locked":""}" id="scene">${SCENE}</div>
+    ${status}
+  </section>
+  <section class="card"><p class="station">Lösungswort</p>${word()}</section>`;
+
+  const svg = app.querySelector("#scene svg");
+  // bereits gelöste Stationen bleiben im Bild grün markiert
+  STATIONS.slice(0, state.found.length).forEach(st=>markFound(svg, st.target));
+  svg.addEventListener("click", e=>{
+    if(state.solved) return;
+    const g = e.target.closest(".item"); if(!g) return;
+    const id = g.dataset.id;
+    if(id===s.target){
+      state.found.push(s.letter); state.solved=true; state.msg=null;
+      render();
+      const n=document.getElementById("next"); if(n){ n.focus({preventScroll:true}); n.scrollIntoView({block:"nearest",behavior:"smooth"}); }
+      return;
+    }
+    if(STATIONS.slice(0,state.found.length).some(st=>st.target===id)){
+      showMsg("Das hast du schon an einer früheren Station gefunden. Jetzt ist etwas anderes gesucht!", null); return;
+    }
+    state.miss++;
+    const msg = s.wrong[id] || (STORY_ITEMS.includes(id) ? STORY_DEFAULT : TRAP_DEFAULT);
+    showMsg(msg, svg, g);
+  });
+  const n=document.getElementById("next");
+  if(n) n.onclick=()=>{state.solved=false; state.msg=null; if(state.i<STATIONS.length-1){state.i++;}else{state.screen="end"} render(); focusTop()};
+}
+function showMsg(msg, svg, g){
+  state.msg = msg;
+  const st = document.getElementById("status");
+  st.className = "status bad";
+  st.innerHTML = `<h3>Falsche Spur!</h3><p>${esc(msg)}</p>`;
+  st.classList.remove("shake"); void st.offsetWidth; st.classList.add("shake");
+  if(svg && g) markWrong(svg, g);
+}
+const NS="http://www.w3.org/2000/svg";
+function center(svg,g){
+  const hit=g.querySelector(".hit"); const b=hit.getBBox();
+  return {cx:b.x+b.width/2, cy:b.y+b.height/2 + (g.dataset.id==="pummel"?-16:0) , r:Math.min(Math.max(b.width,b.height)/2+6, 120), x:(g.dataset.id==="handschuh"?140:0)};
+}
+function markFound(svg,id){
+  const g = svg.querySelector(`.item[data-id="${id}"]`); if(!g) return;
+  let {cx,cy,r,x} = center(svg,g); cx+=x;
+  if(id==="besen") r=60, cy=440, cx=735;
+  const c=document.createElementNS(NS,"circle"); c.setAttribute("cx",cx); c.setAttribute("cy",cy); c.setAttribute("r",r); c.setAttribute("class","ring");
+  const t=document.createElementNS(NS,"circle"); t.setAttribute("cx",cx+r*0.7); t.setAttribute("cy",cy-r*0.7); t.setAttribute("r",13); t.setAttribute("class","ringcheck");
+  const p=document.createElementNS(NS,"path"); p.setAttribute("d",`M${cx+r*0.7-6} ${cy-r*0.7} l4 5 l8 -9`); p.setAttribute("stroke","#fff"); p.setAttribute("stroke-width","3"); p.setAttribute("fill","none");
+  [c,t,p].forEach(el=>{el.style.pointerEvents="none"; svg.appendChild(el)});
+}
+function markWrong(svg,g){
+  let {cx,cy,x} = center(svg,g); cx+=x;
+  if(g.dataset.id==="besen"){cx=740;cy=400}
+  const p=document.createElementNS(NS,"path");
+  p.setAttribute("d",`M${cx-16} ${cy-16} L${cx+16} ${cy+16} M${cx+16} ${cy-16} L${cx-16} ${cy+16}`);
+  p.setAttribute("class","cross"); p.style.pointerEvents="none";
+  svg.appendChild(p); setTimeout(()=>p.remove(),1300);
+}
+function focusTop(){try{window.scrollTo({top:0,behavior:"smooth"})}catch(e){window.scrollTo(0,0)}}
+render();
+</script>
+
+</body>
+</html>
