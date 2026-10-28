@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Forscherheft Bundesländer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&family=Bree+Serif&display=swap">
+<style>
+/* Layout: ein Schulheft in einer Spalte – Kapitel als Heftseiten, jede mit Quelle oben, Aufgaben darunter, Prüfen-Knopf unten */
+:root{
+  --bg:#eef0ea; --paper:#fffefb; --ink:#1e2733; --muted:#5f6a78; --line:#d6dbd2;
+  --accent:#1f6f8b; --accent-soft:#dcecf2; --gold:#d79a1e; --gold-soft:#f8ead0;
+  --ok:#2d7a47; --ok-soft:#dbefe1; --bad:#b33a2e; --bad-soft:#f6dedb;
+  --display:"Bree Serif",Georgia,serif; --body:"Andika","Trebuchet MS",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141a21; --paper:#1f2731; --ink:#edf1f5; --muted:#a3adba; --line:#33404e;
+  --accent:#62b6d4; --accent-soft:#183644; --gold:#f0b54a; --gold-soft:#41331a;
+  --ok:#6cc58b; --ok-soft:#1d3a28; --bad:#ef8174; --bad-soft:#47231f; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141a21; --paper:#1f2731; --ink:#edf1f5; --muted:#a3adba; --line:#33404e;
+  --accent:#62b6d4; --accent-soft:#183644; --gold:#f0b54a; --gold-soft:#41331a;
+  --ok:#6cc58b; --ok-soft:#1d3a28; --bad:#ef8174; --bad-soft:#47231f; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:18px;line-height:1.55;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+.wrap{max-width:780px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0;line-height:1.2;text-wrap:balance}
+h1{font-size:2.2rem} h2{font-size:1.55rem} h3{font-size:1.15rem}
+p{margin:0}
+a{color:var(--accent);font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.eyebrow{font-size:.8rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+.cover{display:flex;flex-direction:column;gap:12px}
+.cover p{max-width:62ch}
+.namerow{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.namerow input{font:inherit;border:0;border-bottom:2px solid var(--ink);background:transparent;color:var(--ink);padding:4px 2px;min-width:0;flex:1;max-width:320px}
+
+/* Fortschritt */
+.progress{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.step{background:var(--paper);border:2px solid var(--line);border-radius:6px;padding:8px 6px;text-align:center;font-size:.85rem;line-height:1.25;display:flex;flex-direction:column;gap:2px;align-items:center}
+.step b{font-family:var(--display);font-weight:400;font-size:1.2rem}
+.step.done{border-color:var(--ok);background:var(--ok-soft)}
+.step .min{color:var(--muted);font-size:.78rem}
+@media (max-width:520px){.step span:not(.min){display:none}}
+
+/* Heftseite */
+.sheet{background:var(--paper);border-radius:6px;border:1px solid var(--line);padding:22px 24px;display:flex;flex-direction:column;gap:18px;position:relative}
+.sheet header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.time{background:var(--gold-soft);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700;white-space:nowrap}
+.source{background:var(--accent-soft);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.98rem}
+.source .lbl{font-weight:700}
+.source a{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--accent);border-radius:6px;padding:4px 12px;text-decoration:none}
+.task{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px dashed var(--line)}
+.task:first-of-type{border-top:0;padding-top:0}
+.task .qn{display:flex;gap:10px;align-items:baseline}
+.task .qn .n{font-family:var(--display);color:var(--accent);min-width:1.6em}
+.opts{display:flex;flex-wrap:wrap;gap:8px;padding-left:calc(1.6em + 10px)}
+.opt{position:relative}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt span{display:inline-block;border:2px solid var(--line);border-radius:6px;padding:6px 14px;background:var(--paper);transition:border-color .12s,background .12s}
+.opt input:checked + span{border-color:var(--accent);background:var(--accent-soft);font-weight:700}
+.opt input:focus-visible + span{outline:3px solid var(--gold);outline-offset:2px}
+.opt:hover span{border-color:var(--accent)}
+.hint{padding-left:calc(1.6em + 10px);font-size:.9rem;color:var(--muted)}
+.mark{padding-left:calc(1.6em + 10px);font-weight:700;font-size:.95rem}
+.mark.ok{color:var(--ok)} .mark.bad{color:var(--bad)}
+.check{align-self:flex-start;background:var(--ink);color:var(--paper);border:0;border-radius:6px;padding:10px 20px;font-weight:700}
+.result{border-radius:6px;padding:10px 14px;font-weight:700}
+.result.ok{background:var(--ok-soft);color:var(--ok)} .result.bad{background:var(--bad-soft);color:var(--bad)}
+.stamp{position:absolute;top:16px;right:20px;transform:rotate(-10deg);border:3px solid var(--ok);color:var(--ok);font-family:var(--display);padding:2px 10px;border-radius:6px;font-size:1.05rem;background:var(--paper)}
+
+/* Kachelkarte */
+.mapwrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:640px){.mapwrap{grid-template-columns:1fr}}
+.tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.tile{aspect-ratio:1/1;max-width:100%;border:2px solid var(--line);border-radius:6px;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:2px;font-size:.78rem;line-height:1.1;text-align:center;overflow:hidden}
+.tile b{font-family:var(--display);font-weight:400;font-size:1.2rem}
+.tile small{font-size:.68rem;color:var(--muted);word-break:break-word}
+.tile.filled{background:var(--gold-soft);border-color:var(--gold)}
+.tile.sel{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent)}
+.tile.right{background:var(--ok-soft);border-color:var(--ok)}
+.tile.wrong{background:var(--bad-soft);border-color:var(--bad)}
+.tile.wide{grid-column:span 2;aspect-ratio:auto}
+.panel{border:2px solid var(--accent);border-radius:6px;padding:16px;display:flex;flex-direction:column;gap:10px}
+.panel select{font:inherit;padding:8px;border:2px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);width:100%}
+.legend{font-size:.85rem;color:var(--muted)}
+.steck{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px 14px;align-items:center}
+.steck label{font-weight:700}
+.steck input,.steck select{font:inherit;border:0;border-bottom:2px solid var(--line);background:transparent;color:var(--ink);padding:4px 2px;width:100%;min-width:0}
+@media (max-width:480px){.steck{grid-template-columns:1fr}}
+.final{background:var(--paper);border:3px double var(--ink);border-radius:8px;padding:22px;text-align:center;display:flex;flex-direction:column;gap:10px;align-items:center}
+.stars{font-size:2rem;letter-spacing:.2em}
+details.teacher{background:var(--paper);border:1px dashed var(--line);border-radius:6px;padding:12px 16px;font-size:.95rem}
+details.teacher summary{font-weight:700;cursor:pointer}
+details.teacher ul{padding-left:20px;margin:8px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>.back{display:inline-block;margin-bottom:-6px;color:var(--accent);font-weight:700;text-decoration:none}</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="back" href="../../">← Alle Lernspiele</a>
+  <header class="cover">
+    <span class="eyebrow">HSU · Klasse 4 · ca. 30 Minuten</span>
+    <h1>Forscherheft: Die 16 Bundesländer</h1>
+    <p>Du bist heute Deutschland-Forscherin oder Deutschland-Forscher. Auf jeder Seite steht oben ein Link zu einer Kinderseite. Öffne ihn, lies nach und beantworte die Fragen. Mit dem Knopf <b>Prüfen</b> siehst du, ob alles stimmt. Für jede fertige Seite bekommst du einen Stempel.</p>
+    <div class="namerow"><label for="kid" class="eyebrow">Mein Name</label><input id="kid" autocomplete="off" placeholder="Name eintragen"></div>
+  </header>
+
+  <nav class="progress" id="progress" aria-label="Fortschritt"></nav>
+  <div id="book" style="display:flex;flex-direction:column;gap:22px"></div>
+
+  <section class="final" id="final" hidden>
+    <span class="eyebrow">Geschafft</span>
+    <h2>Forscher-Urkunde</h2>
+    <div class="stars" aria-hidden="true">★★★★★</div>
+    <p id="finaltext"></p>
+  </section>
+
+  <details class="teacher">
+    <summary>Hinweise und Lösungen für Lehrkräfte</summary>
+    <ul>
+      <li><b>Quellen (alle werbefrei, für Kinder geschrieben):</b> Klexikon (Zentrum für Kinderlexika), HanisauLand (Bundeszentrale für politische Bildung). Die Antworten wurden im Oktober 2026 auf diesen Seiten geprüft.</li>
+      <li><b>Zeit:</b> Seite 1 ca. 5 Min · Seite 2 ca. 10 Min · Seite 3 ca. 6 Min · Seite 4 ca. 6 Min · Seite 5 ca. 3 Min.</li>
+      <li><b>Seite 1:</b> 16 · Berlin, Hamburg, Bremen · 83 Millionen · Länder bestimmen selbst über Schulen.</li>
+      <li><b>Seite 2:</b> BW Stuttgart · BY München · BE Berlin · BB Potsdam · HB Bremen · HH Hamburg · HE Wiesbaden · MV Schwerin · NI Hannover · NW Düsseldorf · RP Mainz · SL Saarbrücken · SN Dresden · ST Magdeburg · SH Kiel · TH Erfurt.</li>
+      <li><b>Seite 3:</b> NRW 17,9 Mio · Bremen ca. 664.000 · meiste Einwohner NRW · kleinstes Bremen · größtes Bayern.</li>
+      <li><b>Seite 4:</b> München · rund 13 Mio · Baden-Württemberg, Hessen, Thüringen, Sachsen · Österreich, Tschechien, Schweiz · Zugspitze.</li>
+      <li>Die Kachelkarte ist vereinfacht und zeigt nur die ungefähre Lage. Für Grenzen und Lage lohnt sich zusätzlich der Atlas.</li>
+      <li>Antworten bleiben im Browser des Kindes gespeichert, solange es dasselbe Gerät nutzt.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+const HS = "https://www.hanisauland.de/wissen/spezial/politik/bundeslaender-foederalismus/die-bundeslaender/";
+const STATES = [
+ {k:"SH",n:"Schleswig-Holstein",c:"Kiel",u:"Schleswig-Holstein",r:1,col:2},
+ {k:"MV",n:"Mecklenburg-Vorpommern",c:"Schwerin",u:"Mecklenburg-Vorpommern",r:1,col:3},
+ {k:"HB",n:"Bremen",c:"Bremen",u:"Bremen",r:2,col:1},
+ {k:"HH",n:"Hamburg",c:"Hamburg",u:"Hamburg",r:2,col:2},
+ {k:"BE",n:"Berlin",c:"Berlin",u:"Berlin",r:2,col:3},
+ {k:"BB",n:"Brandenburg",c:"Potsdam",u:"Brandenburg",r:2,col:4},
+ {k:"NW",n:"Nordrhein-Westfalen",c:"Düsseldorf",u:"Nordrhein-Westfalen",r:3,col:1},
+ {k:"NI",n:"Niedersachsen",c:"Hannover",u:"Niedersachsen",r:3,col:2},
+ {k:"ST",n:"Sachsen-Anhalt",c:"Magdeburg",u:"Sachsen-Anhalt",r:3,col:3},
+ {k:"RP",n:"Rheinland-Pfalz",c:"Mainz",u:"Rheinland-Pfalz",r:4,col:1},
+ {k:"HE",n:"Hessen",c:"Wiesbaden",u:"Hessen",r:4,col:2},
+ {k:"TH",n:"Thüringen",c:"Erfurt",u:"Thueringen",r:4,col:3},
+ {k:"SN",n:"Sachsen",c:"Dresden",u:"Sachsen-bundesland",r:4,col:4},
+ {k:"SL",n:"Saarland",c:"Saarbrücken",u:"Saarland",r:5,col:1},
+ {k:"BW",n:"Baden-Württemberg",c:"Stuttgart",u:"baden-wuerttemberg",r:5,col:2},
+ {k:"BY",n:"Bayern",c:"München",u:"Bayern",r:5,col:3,wide:1}
+];
+const CAPS = STATES.map(s=>s.c).slice().sort((a,b)=>a.localeCompare(b,"de"));
+
+const PAGES = [
+ {title:"Deutschland und seine Länder", min:5,
+  src:[["Klexikon: Bundesland","https://klexikon.zum.de/wiki/Bundesland"],["Klexikon: Deutschland","https://klexikon.zum.de/wiki/Deutschland"]],
+  tasks:[
+   {t:"mc",q:"Aus wie vielen Bundesländern besteht Deutschland?",o:["9","12","16","20"],a:[2],hint:"Steht gleich am Anfang von „Bundesland“."},
+   {t:"multi",q:"Drei Bundesländer sind gleichzeitig eine Stadt. Man nennt sie Stadtstaaten. Kreuze alle drei an.",o:["Berlin","München","Hamburg","Köln","Bremen","Bayern"],a:[0,2,4]},
+   {t:"mc",q:"Wie viele Menschen leben ungefähr in ganz Deutschland?",o:["8 Millionen","83 Millionen","830 Millionen"],a:[1],hint:"Lies im Artikel „Deutschland“ nach."},
+   {t:"mc",q:"Warum haben die Bundesländer nicht alle gleichzeitig Ferien?",o:["Weil das Wetter überall anders ist.","Weil jedes Land selbst über seine Schulen bestimmt.","Weil die Ferien ausgelost werden."],a:[1]}
+  ]},
+ {title:"Länder und ihre Hauptstädte", min:10, map:true,
+  src:[["HanisauLand: Die Bundesländer",HS+"Bayern"]],
+  intro:"Jedes Bundesland hat eine Hauptstadt. Klicke auf ein Kästchen in der Karte. Öffne den Steckbrief und suche die <b>Hauptstadt</b>. Wähle sie dann aus der Liste."},
+ {title:"Groß, klein, viele, wenige", min:6,
+  src:[["HanisauLand: Nordrhein-Westfalen",HS+"Nordrhein-Westfalen"],["HanisauLand: Bremen",HS+"Bremen"],["HanisauLand: Bayern",HS+"Bayern"]],
+  tasks:[
+   {t:"mc",q:"Wie viele Einwohner hat Nordrhein-Westfalen?",o:["1,8 Millionen","17,9 Millionen","179 Millionen"],a:[1]},
+   {t:"mc",q:"Wie viele Einwohner hat Bremen ungefähr?",o:["66.000","664.000","6,6 Millionen"],a:[1]},
+   {t:"mc",q:"In welchem Bundesland leben die meisten Menschen?",o:["Bayern","Berlin","Nordrhein-Westfalen"],a:[2],hint:"Vergleiche die Einwohnerzahlen von Nordrhein-Westfalen und Bayern."},
+   {t:"mc",q:"Welches ist das kleinste Bundesland?",o:["Saarland","Bremen","Hamburg"],a:[1],hint:"Auf der Seite von Bremen steht es."},
+   {t:"mc",q:"Welches ist das größte Bundesland (nach der Fläche)?",o:["Niedersachsen","Nordrhein-Westfalen","Bayern"],a:[2],hint:"„flächenmäßig“ heißt: nach der Größe des Landes."}
+  ]},
+ {title:"Unser Bundesland: Bayern", min:6,
+  src:[["Klexikon: Bayern","https://klexikon.zum.de/wiki/Bayern"]],
+  tasks:[
+   {t:"mc",q:"Wie heißt die Hauptstadt von Bayern?",o:["Nürnberg","München","Augsburg"],a:[1]},
+   {t:"mc",q:"Wie viele Menschen leben in Bayern?",o:["rund 3 Millionen","rund 13 Millionen","rund 30 Millionen"],a:[1]},
+   {t:"multi",q:"An welche Bundesländer grenzt Bayern? Kreuze alle vier an.",o:["Baden-Württemberg","Nordrhein-Westfalen","Hessen","Thüringen","Sachsen-Anhalt","Sachsen"],a:[0,2,3,5]},
+   {t:"multi",q:"An welche Länder außerhalb von Deutschland grenzt Bayern? Kreuze alle drei an.",o:["Österreich","Frankreich","Tschechien","Polen","Schweiz"],a:[0,2,4],hint:"Die Schweiz liegt am anderen Ufer vom Bodensee."},
+   {t:"mc",q:"Wie heißt der höchste Berg Deutschlands? Er steht in Bayern.",o:["Zugspitze","Brocken","Feldberg"],a:[0]}
+  ]},
+ {title:"Mein Lieblings-Bundesland", min:3, free:true,
+  src:[["HanisauLand: Die Bundesländer",HS+"Bayern"]],
+  intro:"Such dir ein Bundesland aus, das nicht Bayern ist. Lies seinen Steckbrief und fülle den Steckbrief hier aus."}
+];
+
+/* Zustand */
+let S = {name:"",ans:{},done:[]};
+try{const x=JSON.parse(localStorage.getItem("bl-heft")||"null"); if(x&&x.ans) S=Object.assign(S,x)}catch(e){}
+const save=()=>{try{localStorage.setItem("bl-heft",JSON.stringify(S))}catch(e){}};
+const kid=document.getElementById("kid"); kid.value=S.name||"";
+kid.oninput=()=>{S.name=kid.value;save();renderFinal()};
+
+function renderProgress(){
+  document.getElementById("progress").innerHTML = PAGES.map((p,i)=>`<a href="#seite${i+1}" class="step ${S.done.includes(i)?"done":""}" style="text-decoration:none;color:inherit">
+    <b>${S.done.includes(i)?"✓":i+1}</b><span>${p.title.split(":")[0]}</span><span class="min">${p.min} Min</span></a>`).join("");
+}
+
+function srcBox(p){
+  return `<div class="source"><span class="lbl">📖 Hier liest du nach:</span>${p.src.map(s=>`<a href="${s[1]}" target="_blank" rel="noopener">${s[0]} ↗</a>`).join("")}</div>`;
+}
+
+function taskHTML(pi,ti,t){
+  const id=`p${pi}t${ti}`, cur=S.ans[id]||[];
+  const type=t.t==="mc"?"radio":"checkbox";
+  return `<div class="task" data-id="${id}">
+    <p class="qn"><span class="n">${ti+1}.</span><span>${t.q}</span></p>
+    <div class="opts" role="group">${t.o.map((o,oi)=>`<label class="opt"><input type="${type}" name="${id}" id="${id}o${oi}" value="${oi}" ${cur.includes(oi)?"checked":""}><span>${o}</span></label>`).join("")}</div>
+    <p class="mark" id="${id}m" aria-live="polite"></p>
+  </div>`;
+}
+
+function render(){
+  const book=document.getElementById("book");
+  book.innerHTML = PAGES.map((p,pi)=>`
+  <section class="sheet" id="seite${pi+1}">
+    ${S.done.includes(pi)?`<span class="stamp">Erledigt ✓</span>`:""}
+    <header><div style="display:flex;flex-direction:column;gap:4px"><span class="eyebrow">Seite ${pi+1} von ${PAGES.length}</span><h2>${p.title}</h2></div><span class="time">⏱ ca. ${p.min} Minuten</span></header>
+    ${srcBox(p)}
+    ${p.intro?`<p>${p.intro}</p>`:""}
+    ${p.tasks?p.tasks.map((t,ti)=>taskHTML(pi,ti,t)).join(""):""}
+    ${p.map?mapHTML():""}
+    ${p.free?freeHTML():""}
+    <button class="check" data-p="${pi}">${p.free?"Steckbrief fertig":"Prüfen"}</button>
+    <div id="r${pi}" aria-live="polite"></div>
+  </section>`).join("");
+
+  book.querySelectorAll(".opts input").forEach(inp=>inp.onchange=()=>{
+    const id=inp.name, box=book.querySelectorAll(`input[name="${id}"]`);
+    S.ans[id]=[...box].filter(b=>b.checked).map(b=>+b.value); save();
+    document.getElementById(id+"m").textContent=""; document.getElementById(id+"m").className="mark";
+  });
+  book.querySelectorAll(".check").forEach(b=>b.onclick=()=>check(+b.dataset.p));
+  if(document.getElementById("tiles")) bindMap();
+  if(document.getElementById("fs-land")) bindFree();
+  renderProgress(); renderFinal();
+}
+
+/* Karte */
+let sel="BY";
+function mapHTML(){
+  return `<div class="mapwrap">
+    <div><div class="tiles" id="tiles" style="grid-template-rows:repeat(5,auto)">${STATES.map(s=>`<button class="tile ${s.wide?"wide":""}" data-k="${s.k}" style="grid-row:${s.r};grid-column:${s.col}${s.wide?" / span 2":""}" aria-label="${s.n}"><b>${s.k}</b><small></small></button>`).join("")}</div>
+    <p class="legend">Vereinfachte Karte. Die Kästchen zeigen die ungefähre Lage. Oben ist Norden.</p></div>
+    <div class="panel" id="panel"></div>
+  </div>`;
+}
+function bindMap(){
+  document.querySelectorAll(".tile").forEach(t=>t.onclick=()=>{sel=t.dataset.k;drawMap()});
+  drawMap();
+}
+function drawMap(){
+  STATES.forEach(s=>{
+    const t=document.querySelector(`.tile[data-k="${s.k}"]`), v=S.ans["cap-"+s.k];
+    t.classList.toggle("filled",!!v); t.classList.toggle("sel",s.k===sel);
+    t.querySelector("small").textContent=v||"";
+  });
+  const s=STATES.find(x=>x.k===sel), v=S.ans["cap-"+s.k]||"";
+  const n=STATES.filter(x=>S.ans["cap-"+x.k]).length;
+  document.getElementById("panel").innerHTML=`
+    <span class="eyebrow">${s.k}</span><h3>${s.n}</h3>
+    <a href="${HS+s.u}" target="_blank" rel="noopener">Steckbrief ${s.n} öffnen ↗</a>
+    <label for="capsel">Die Hauptstadt heißt:</label>
+    <select id="capsel"><option value="">– bitte wählen –</option>${CAPS.map(c=>`<option ${c===v?"selected":""}>${c}</option>`).join("")}</select>
+    <p class="legend">${n} von 16 Hauptstädten eingetragen</p>
+    <button class="check" id="nextland" style="background:var(--accent)">Nächstes Bundesland →</button>`;
+  document.getElementById("capsel").onchange=e=>{S.ans["cap-"+s.k]=e.target.value;save();
+    document.querySelectorAll(".tile").forEach(t=>t.classList.remove("right","wrong"));drawMap();document.getElementById("capsel").focus()};
+  document.getElementById("nextland").onclick=()=>{
+    const i=STATES.findIndex(x=>x.k===sel); const rest=[...STATES.slice(i+1),...STATES.slice(0,i+1)];
+    const nx=rest.find(x=>!S.ans["cap-"+x.k])||rest[0]; sel=nx.k; drawMap();
+  };
+}
+
+/* Steckbrief */
+const FREE=[["fs-land","Bundesland"],["fs-cap","Hauptstadt"],["fs-ew","Einwohner"],["fs-spez","Das ist dort besonders"]];
+function freeHTML(){
+  return `<div class="steck">${FREE.map(([id,l])=>`<label for="${id}">${l}:</label>`+
+    (id==="fs-land"?`<select id="${id}"><option value="">– bitte wählen –</option>${STATES.filter(s=>s.k!=="BY").map(s=>`<option ${S.ans[id]===s.n?"selected":""}>${s.n}</option>`).join("")}</select>`
+    :`<input id="${id}" autocomplete="off" value="${(S.ans[id]||"").replace(/"/g,"&quot;")}">`)).join("")}</div>`;
+}
+function bindFree(){
+  FREE.forEach(([id])=>{const el=document.getElementById(id);el.oninput=el.onchange=()=>{S.ans[id]=el.value;save()}});
+}
+
+/* Prüfen */
+function check(pi){
+  const p=PAGES[pi], r=document.getElementById("r"+pi); let wrong=0, empty=0;
+  if(p.tasks){
+    p.tasks.forEach((t,ti)=>{
+      const id=`p${pi}t${ti}`, cur=(S.ans[id]||[]).slice().sort(), m=document.getElementById(id+"m");
+      if(!cur.length){empty++;m.className="mark bad";m.textContent="Hier fehlt noch deine Antwort.";return}
+      const ok=JSON.stringify(cur)===JSON.stringify(t.a.slice().sort());
+      if(ok){m.className="mark ok";m.textContent="✓ Richtig!"}
+      else{wrong++;m.className="mark bad";
+        m.textContent= t.t==="multi"&&cur.length!==t.a.length ? `Noch nicht ganz. Es sind genau ${t.a.length} richtige Antworten.` : "Lies noch einmal nach."+(t.hint?" Tipp: "+t.hint:"")}
+    });
+  }
+  if(p.map){
+    STATES.forEach(s=>{const v=S.ans["cap-"+s.k], t=document.querySelector(`.tile[data-k="${s.k}"]`);
+      t.classList.remove("right","wrong");
+      if(!v) empty++; else if(v===s.c) t.classList.add("right"); else {wrong++;t.classList.add("wrong")}});
+  }
+  if(p.free){ empty=FREE.filter(([id])=>!(S.ans[id]||"").trim()).length; }
+  if(!wrong&&!empty){
+    if(!S.done.includes(pi)) S.done.push(pi); save();
+    render(); const rr=document.getElementById("r"+pi);
+    rr.innerHTML=`<p class="result ok">Super! Seite ${pi+1} ist fertig.${pi<PAGES.length-1?" Weiter mit Seite "+(pi+2)+".":""}</p>`;
+    document.getElementById("seite"+(pi+1)).scrollIntoView({block:"end",behavior:"smooth"});
+  } else {
+    r.innerHTML=`<p class="result bad">${p.map
+      ? (empty?`Es fehlen noch ${empty} Hauptstädte. `:"")+(wrong?`${wrong} ${wrong===1?"Hauptstadt ist":"Hauptstädte sind"} falsch (rot). Öffne den Steckbrief noch einmal.`:"")
+      : p.free ? `Fülle noch ${empty} ${empty===1?"Feld":"Felder"} aus.`
+      : (empty?`${empty} ${empty===1?"Frage ist":"Fragen sind"} noch leer. `:"")+(wrong?`${wrong} ${wrong===1?"Antwort stimmt":"Antworten stimmen"} noch nicht.`:"")}</p>`;
+  }
+}
+
+function renderFinal(){
+  const f=document.getElementById("final"), all=S.done.length===PAGES.length;
+  f.hidden=!all;
+  if(all) document.getElementById("finaltext").innerHTML=`${S.name?"<b>"+S.name.replace(/</g,"&lt;")+"</b> hat":"Du hast"} alle fünf Seiten erforscht und kennt jetzt die 16 Bundesländer, ihre Hauptstädte und das eigene Bundesland Bayern.`;
+}
+render();
+</script>
+</body>
+</html>

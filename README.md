@@ -15,4 +15,5 @@ deutsch/
   tortenklau/           Lesespur mit Suchbild „Der Tortenklau“ (Klasse 4)
 mathe/
 hsu/
+  bundeslaender/        Forscherheft „Die 16 Bundesländer“ (Klasse 4, ca. 30 Min)
 ```
