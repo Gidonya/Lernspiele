@@ -110,7 +110,7 @@ details.teacher ul{padding-left:20px;margin:8px 0}
 <div class="wrap">
   <a class="back" href="../../">← Alle Lernspiele</a>
   <header class="cover">
-    <span class="eyebrow">HSU · Klasse 4 · ca. 30 Minuten</span>
+    <span class="eyebrow">HSU · Klasse 4 · ca. 35 Minuten</span>
     <h1>Forscherheft: Die 16 Bundesländer</h1>
     <p>Du bist heute Deutschland-Forscherin oder Deutschland-Forscher. Auf jeder Seite gibt es einen kurzen Text. Lies ihn genau und beantworte dann die Fragen. Mit dem Knopf <b>Prüfen</b> siehst du, ob alles stimmt. Für jede fertige Seite bekommst du einen Stempel.</p>
     <div class="namerow"><label for="kid" class="eyebrow">Mein Name</label><input id="kid" autocomplete="off" placeholder="Name eintragen"></div>
@@ -129,8 +129,8 @@ details.teacher ul{padding-left:20px;margin:8px 0}
   <details class="teacher">
     <summary>Hinweise und Lösungen für Lehrkräfte</summary>
     <ul>
-      <li><b>Lesetexte:</b> Die kurzen Texte sind vereinfacht nach den Kinderseiten Klexikon (Zentrum für Kinderlexika) und HanisauLand (Bundeszentrale für politische Bildung) geschrieben. Die Zahlen sind von dort übernommen (Stand Oktober 2026).</li><li><b>Stolpersteine auf Seite 2:</b> Bei Hessen und Sachsen wird zuerst die größte Stadt genannt (Frankfurt, Leipzig). Die Kinder müssen also genau lesen, welche Stadt die Hauptstadt ist.</li>
-      <li><b>Zeit:</b> Seite 1 ca. 5 Min · Seite 2 ca. 10 Min · Seite 3 ca. 6 Min · Seite 4 ca. 6 Min · Seite 5 ca. 3 Min.</li>
+      <li><b>Lesetexte:</b> Die kurzen Texte sind vereinfacht nach den Kinderseiten Klexikon (Zentrum für Kinderlexika) und HanisauLand (Bundeszentrale für politische Bildung) geschrieben. Die Zahlen sind von dort übernommen (Stand Oktober 2026).</li><li><b>Stolpersteine auf Seite 2:</b> Bei Hessen, Sachsen und Nordrhein-Westfalen wird zuerst die größte Stadt genannt (Frankfurt, Leipzig, Köln). Bei Brandenburg wird Berlin erwähnt. Die Kinder müssen also genau lesen, welche Stadt die Hauptstadt ist.</li>
+      <li><b>Zeit:</b> Seite 1 ca. 6 Min · Seite 2 ca. 12 Min · Seite 3 ca. 6 Min · Seite 4 ca. 8 Min · Seite 5 ca. 3 Min. Für schnelle Kinder: alle 16 Ländertexte auf Seite 2 lesen.</li>
       <li><b>Seite 1:</b> 16 · Berlin, Hamburg, Bremen · 83 Millionen · Länder bestimmen selbst über Schulen.</li>
       <li><b>Seite 2:</b> BW Stuttgart · BY München · BE Berlin · BB Potsdam · HB Bremen · HH Hamburg · HE Wiesbaden · MV Schwerin · NI Hannover · NW Düsseldorf · RP Mainz · SL Saarbrücken · SN Dresden · ST Magdeburg · SH Kiel · TH Erfurt.</li>
       <li><b>Seite 3:</b> NRW 17,9 Mio · Bremen ca. 664.000 · meiste Einwohner NRW · kleinstes Bremen · größtes Bayern.</li>
@@ -164,27 +164,27 @@ const STATES = [
 const CAPS = STATES.map(s=>s.c).slice().sort((a,b)=>a.localeCompare(b,"de"));
 
 const INFO = {
- SH:"In Schleswig-Holstein leben etwa 2,9 Millionen Menschen. Die Landeshauptstadt ist Kiel. Schleswig-Holstein ist das einzige Bundesland, das an zwei Meeren liegt: an der Nordsee und an der Ostsee.",
- MV:"Die Hauptstadt von Mecklenburg-Vorpommern ist Schwerin. Dort steht das Schloss mitten in einem See. Im ganzen Land gibt es über 2.000 Seen. Hier wohnen etwa 1,6 Millionen Menschen.",
- HB:"Bremen ist das kleinste Bundesland. Es besteht aus zwei Städten: Bremen und Bremerhaven. Die Stadt Bremen ist die Hauptstadt. Im Land Bremen leben etwa 664.000 Menschen.",
- HH:"Hamburg ist eine Stadt und gleichzeitig ein Bundesland. Die Hauptstadt ist also Hamburg selbst. In Hamburg gibt es rund 2.500 Brücken. Hier leben etwa 1,9 Millionen Menschen.",
- BE:"Berlin ist die Hauptstadt von Deutschland. Berlin ist aber auch ein Bundesland. Die Hauptstadt des Landes Berlin ist also Berlin. Hier leben etwa 3,8 Millionen Menschen.",
- BB:"Brandenburg liegt rund um Berlin. Seine Hauptstadt ist aber Potsdam. In Himmelpfort gibt es sogar ein Postamt des Weihnachtsmanns. In Brandenburg leben etwa 2,5 Millionen Menschen.",
- NW:"In Nordrhein-Westfalen leben etwa 17,9 Millionen Menschen. Das sind mehr als in jedem anderen Bundesland. Die Hauptstadt ist Düsseldorf. In Dülmen leben bis zu 400 Wildpferde.",
- NI:"Niedersachsen ist das zweitgrößte Bundesland. Die Hauptstadt ist Hannover. Hier leben etwa 8 Millionen Menschen. Der größte See heißt Steinhuder Meer.",
- ST:"Die Hauptstadt von Sachsen-Anhalt ist Magdeburg. Der höchste Berg im Land ist der Brocken. In Sachsen-Anhalt leben etwa 2,2 Millionen Menschen.",
- RP:"Die Hauptstadt von Rheinland-Pfalz ist Mainz. Die Stadt Trier gilt als älteste Stadt Deutschlands. In Rheinland-Pfalz leben etwa 4,1 Millionen Menschen.",
- HE:"In Hessen leben etwa 6,3 Millionen Menschen. Die größte Stadt ist Frankfurt am Main. Die Hauptstadt ist aber Wiesbaden. Dort gibt es heiße Quellen.",
- TH:"Thüringen liegt mitten in Deutschland. Die Hauptstadt ist Erfurt. Die Schultüte kommt ursprünglich aus Thüringen. Hier leben etwa 2,1 Millionen Menschen.",
- SN:"Die größte Stadt in Sachsen ist Leipzig. Die Hauptstadt ist aber Dresden. In Sachsen steht die größte Backsteinbrücke der Welt. Hier leben etwa 4,1 Millionen Menschen.",
- SL:"Das Saarland liegt an der Grenze zu Frankreich. Die Hauptstadt ist Saarbrücken. Viele Kinder lernen hier schon in der Grundschule Französisch. Im Saarland leben etwa 980.000 Menschen.",
- BW:"In Baden-Württemberg leben etwa 11,1 Millionen Menschen. Die Hauptstadt ist Stuttgart. Fast die Hälfte des Landes ist mit Wald bedeckt. In Ulm steht der höchste Kirchturm der Welt.",
- BY:"Bayern ist das größte Bundesland. Die Hauptstadt ist München. Hier leben rund 13 Millionen Menschen. Auf Seite 4 erfährst du noch mehr über Bayern."
+ SH:"Schleswig-Holstein ist das nördlichste Bundesland. Im Norden grenzt es an Dänemark. Es ist das einzige Bundesland, das an zwei Meeren liegt: an der Nordsee und an der Ostsee. Eine bekannte Stadt an der Ostsee ist Lübeck. Das Holstentor in Lübeck ist sogar auf manchen 2-Euro-Münzen zu sehen. Die Landeshauptstadt heißt Kiel. In Schleswig-Holstein leben etwa 2,9 Millionen Menschen.",
+ MV:"Mecklenburg-Vorpommern liegt im Nordosten von Deutschland an der Ostsee. Im Land gibt es über 2.000 Seen. Deshalb nennt man es das wasserreichste Bundesland. Die Hauptstadt ist Schwerin. Sie ist die kleinste Landeshauptstadt in Deutschland. In Schwerin steht ein Schloss mitten in einem See. In Mecklenburg-Vorpommern wohnen etwa 1,6 Millionen Menschen.",
+ HB:"Bremen ist das kleinste Bundesland. Es ist ein Stadtstaat, besteht aber als einziger aus zwei Städten: Bremen und Bremerhaven. Beide Städte liegen an der Weser und sind ganz von Niedersachsen umgeben. Bremerhaven hat einen großen Hafen an der Nordsee. Die Stadt Bremen ist die Hauptstadt. Im Land Bremen leben etwa 664.000 Menschen.",
+ HH:"Hamburg ist eine Stadt und gleichzeitig ein Bundesland. Man nennt das einen Stadtstaat. Die Hauptstadt ist also Hamburg selbst. Hamburg liegt an der Elbe und hat einen großen Hafen. In der Stadt gibt es rund 2.500 Brücken. Das sind mehr als in jeder anderen Stadt in Europa. In Hamburg leben etwa 1,9 Millionen Menschen.",
+ BE:"Berlin ist die Hauptstadt von Deutschland und die größte Stadt im Land. Berlin ist aber auch ein Bundesland, also ein Stadtstaat. Die Hauptstadt des Landes Berlin ist deshalb Berlin selbst. Ringsherum liegt das Bundesland Brandenburg. Der Name Berlin kommt aus einer alten slawischen Sprache und bedeutet etwa „Ort im Sumpf“. Hier leben etwa 3,8 Millionen Menschen.",
+ BB:"Brandenburg liegt im Osten von Deutschland, rund um Berlin. Seine Hauptstadt ist aber nicht Berlin, sondern Potsdam. Im Spreewald fahren die Menschen mit flachen Booten durch kleine Kanäle. Die Boote haben keinen Motor, sondern werden mit einer langen Stange geschoben. In Himmelpfort gibt es sogar ein Postamt des Weihnachtsmanns. In Brandenburg leben etwa 2,5 Millionen Menschen.",
+ NW:"In Nordrhein-Westfalen leben etwa 17,9 Millionen Menschen. Das sind mehr als in jedem anderen Bundesland. Die größte Stadt ist Köln. Die Hauptstadt ist aber Düsseldorf. Im Ruhrgebiet gab es früher viele Kohlebergwerke. Heute kann man in manchen alten Zechen Schlittschuh laufen, schwimmen oder Konzerte besuchen. In Dülmen leben bis zu 400 Wildpferde.",
+ NI:"Niedersachsen ist das zweitgrößte Bundesland. Es liegt im Norden an der Nordsee. Die Hauptstadt ist Hannover. Im Rathaus von Hannover gibt es einen Aufzug, der schräg nach oben in die Kuppel fährt. Der größte See im Land heißt Steinhuder Meer. Früher hat man große Seen nämlich auch „Meer“ genannt. In Niedersachsen leben etwa 8 Millionen Menschen.",
+ ST:"Sachsen-Anhalt liegt in der Mitte von Deutschland, ein bisschen im Osten. Die Hauptstadt ist Magdeburg. Der höchste Berg im Land ist der Brocken im Harz. Dort feiern jedes Jahr am 30. April viele Menschen verkleidet als Hexen die Walpurgisnacht. Im Dorf Ströbeck steht Schach schon seit über 200 Jahren auf dem Stundenplan der Grundschule. In Sachsen-Anhalt leben etwa 2,2 Millionen Menschen.",
+ RP:"Rheinland-Pfalz liegt im Westen von Deutschland. Durch das Land fließt der Rhein. Am Rhein steht ein hoher Felsen, die Loreley. Über sie gibt es eine alte Sage. Die Stadt Trier gilt als älteste Stadt Deutschlands. Dort steht noch ein Stadttor aus der Römerzeit, die Porta Nigra. Die Hauptstadt von Rheinland-Pfalz ist Mainz. Hier leben etwa 4,1 Millionen Menschen.",
+ HE:"Hessen liegt in der Mitte von Deutschland. Hier leben etwa 6,3 Millionen Menschen. Die größte Stadt ist Frankfurt am Main. Dort gibt es so viele Hochhäuser, dass man die Stadt im Spaß „Mainhattan“ nennt. Die Hauptstadt ist aber Wiesbaden. Wiesbaden hat heiße Quellen. Früher hieß die Stadt deshalb „Bad in den Wiesen“.",
+ TH:"Thüringen liegt mitten in Deutschland. Man nennt es auch das „grüne Herz Deutschlands“, weil es so viel Wald hat. Die Hauptstadt ist Erfurt. In Erfurt gibt es die Krämerbrücke. Auf dieser Brücke stehen Häuser, in denen Menschen wohnen. Die Schultüte kommt übrigens aus Thüringen: Schon vor über 200 Jahren bekamen Kinder hier eine Tüte mit Süßigkeiten zum ersten Schultag. In Thüringen leben etwa 2,1 Millionen Menschen.",
+ SN:"Sachsen liegt im Osten von Deutschland. Es grenzt an Polen und an Tschechien. Die größte Stadt in Sachsen ist Leipzig. Die Hauptstadt ist aber Dresden. Im Vogtland steht die größte Backsteinbrücke der Welt. Für sie wurden 26 Millionen Ziegelsteine verbaut. In der Oberlausitz sprechen manche Menschen neben Deutsch auch Sorbisch. In Sachsen leben etwa 4,1 Millionen Menschen.",
+ SL:"Das Saarland ist das kleinste Bundesland, das keine Stadt ist. Es liegt im Südwesten an der Grenze zu Frankreich und Luxemburg. Viele Kinder lernen hier schon in der Grundschule Französisch. Der Fluss Saar macht eine große Kurve und fließt fast im Kreis. Das ist die berühmte Saarschleife. Die Hauptstadt ist Saarbrücken. Im Saarland leben etwa 980.000 Menschen.",
+ BW:"Baden-Württemberg liegt im Südwesten von Deutschland. Es grenzt an Frankreich und an die Schweiz. Fast die Hälfte des Landes ist mit Wald bedeckt, zum Beispiel mit dem Schwarzwald. In Ulm steht der höchste Kirchturm der Welt. Die Hauptstadt ist Stuttgart. In Baden-Württemberg leben etwa 11,1 Millionen Menschen.",
+ BY:"Bayern liegt im Südosten von Deutschland. Es ist das größte Bundesland. Die Hauptstadt ist München. Hier leben rund 13 Millionen Menschen. Auf Seite 4 erfährst du noch viel mehr über Bayern."
 };
 
 const PAGES = [
- {title:"Deutschland und seine Länder", min:5,
-  text:"Deutschland ist in <b>16 Bundesländer</b> aufgeteilt. Jedes Bundesland hat eine eigene Regierung und eine eigene Hauptstadt. Die Bundesländer bestimmen zum Beispiel selbst über ihre Schulen. Deshalb haben nicht alle Kinder in Deutschland gleichzeitig Ferien.<br><br>Drei Bundesländer sind gleichzeitig eine Stadt: Berlin, Hamburg und Bremen. Man nennt sie <b>Stadtstaaten</b>.<br><br>In ganz Deutschland leben ungefähr 83 Millionen Menschen. Die Hauptstadt von Deutschland ist Berlin.",
+ {title:"Deutschland und seine Länder", min:6,
+  text:"Deutschland liegt mitten in Europa. In ganz Deutschland leben ungefähr 83 Millionen Menschen. Die Hauptstadt von Deutschland ist Berlin. Berlin ist auch die größte Stadt im Land.<br><br>Deutschland ist in <b>16 Bundesländer</b> aufgeteilt. Früher waren viele dieser Länder eigene kleine Staaten. Vor etwa 150 Jahren haben sie sich zusammengeschlossen. Bis heute hat jedes Bundesland ein eigenes Parlament, eine eigene Regierung und eine eigene Hauptstadt. Jedes Land hat auch ein eigenes Wappen und eine eigene Flagge.<br><br>Die Bundesländer dürfen manche Dinge selbst bestimmen, zum Beispiel über ihre Schulen. Deshalb lernen Kinder nicht überall genau das Gleiche. Auch die Ferien beginnen nicht in allen Ländern zur selben Zeit. Wichtige Dinge für ganz Deutschland besprechen die Länder gemeinsam im Bundesrat in Berlin.<br><br>Die meisten Bundesländer sind große Gebiete mit vielen Städten und Dörfern. Drei Bundesländer sind aber gleichzeitig eine Stadt: Berlin, Hamburg und Bremen. Man nennt sie <b>Stadtstaaten</b>.",
   src:"Klexikon: Bundesland, Deutschland",
   tasks:[
    {t:"mc",q:"Aus wie vielen Bundesländern besteht Deutschland?",o:["9","12","16","20"],a:[2]},
@@ -192,11 +192,11 @@ const PAGES = [
    {t:"mc",q:"Wie viele Menschen leben ungefähr in ganz Deutschland?",o:["8 Millionen","83 Millionen","830 Millionen"],a:[1]},
    {t:"mc",q:"Warum haben die Bundesländer nicht alle gleichzeitig Ferien?",o:["Weil das Wetter überall anders ist.","Weil jedes Land selbst über seine Schulen bestimmt.","Weil die Ferien ausgelost werden."],a:[1]}
   ]},
- {title:"Länder und ihre Hauptstädte", min:10, map:true,
+ {title:"Länder und ihre Hauptstädte", min:12, map:true,
   intro:"Jedes Bundesland hat eine Hauptstadt. Klicke in der Karte auf ein Bundesland. Lies den kurzen Text und wähle die <b>Hauptstadt</b> aus der Liste. Achtung: Die größte Stadt ist nicht immer die Hauptstadt!",
   src:"HanisauLand (bpb): Die Bundesländer"},
  {title:"Groß, klein, viele, wenige", min:6,
-  text:"Die Bundesländer sind sehr unterschiedlich. <b>Bayern</b> ist das größte Bundesland. Es hat die meiste Fläche. In Bayern leben rund 13 Millionen Menschen.<br><br>In <b>Nordrhein-Westfalen</b> ist das Land kleiner. Dafür wohnen dort viel mehr Menschen: etwa 17,9 Millionen. In <b>Berlin</b> leben etwa 3,8 Millionen Menschen.<br><br>Das kleinste Bundesland ist <b>Bremen</b>. Dort wohnen nur etwa 664.000 Menschen.",
+  text:"Die Bundesländer sind sehr unterschiedlich. Wenn man sie vergleicht, kann man zwei Dinge anschauen: Wie groß ist das Land, also wie viel <b>Fläche</b> hat es? Und wie viele Menschen leben dort? Das nennt man die <b>Einwohnerzahl</b>.<br><br><b>Bayern</b> ist das größte Bundesland. Seine Fläche ist 70.550 Quadratkilometer groß. In Bayern leben rund 13 Millionen Menschen.<br><br><b>Nordrhein-Westfalen</b> ist nur halb so groß wie Bayern. Dafür wohnen dort viel mehr Menschen: etwa 17,9 Millionen. Dort liegen viele große Städte ganz nah beieinander, zum Beispiel im Ruhrgebiet.<br><br>Die Stadt <b>Berlin</b> hat eine Fläche von 892 Quadratkilometern. Dort leben etwa 3,8 Millionen Menschen.<br><br>Das kleinste Bundesland ist <b>Bremen</b>. Es ist nur 404 Quadratkilometer groß. Dort wohnen etwa 664.000 Menschen. Das kleinste Bundesland, das keine Stadt ist, ist das Saarland.",
   src:"HanisauLand (bpb): Bayern, Nordrhein-Westfalen, Berlin, Bremen",
   tasks:[
    {t:"mc",q:"Wie viele Menschen leben in Nordrhein-Westfalen?",o:["1,8 Millionen","17,9 Millionen","179 Millionen"],a:[1]},
@@ -205,8 +205,8 @@ const PAGES = [
    {t:"mc",q:"Welches ist das kleinste Bundesland?",o:["Saarland","Bremen","Hamburg"],a:[1]},
    {t:"mc",q:"Welches ist das größte Bundesland?",o:["Niedersachsen","Nordrhein-Westfalen","Bayern"],a:[2],hint:"Groß heißt hier: Das Land hat die meiste Fläche."}
   ]},
- {title:"Unser Bundesland: Bayern", min:6,
-  text:"Wir leben in <b>Bayern</b>. Die Hauptstadt ist München. In Bayern wohnen rund 13 Millionen Menschen.<br><br>Bayern hat vier Nachbar-Bundesländer: Im Westen liegt Baden-Württemberg. Im Norden liegen Hessen und Thüringen. Im Osten liegt Sachsen.<br><br>Bayern grenzt auch an drei andere Staaten: an Österreich im Süden, an Tschechien im Osten und an die Schweiz am Bodensee.<br><br>In den Alpen steht die <b>Zugspitze</b>. Sie ist 2.962 Meter hoch und der höchste Berg Deutschlands.",
+ {title:"Unser Bundesland: Bayern", min:8,
+  text:"Wir leben in <b>Bayern</b>. Bayern liegt im Südosten von Deutschland und ist das größte Bundesland. Die Hauptstadt ist München. In Bayern wohnen rund 13 Millionen Menschen. Bayern nennt sich auch „Freistaat“, weil es bis vor etwa 100 Jahren ein Königreich war.<br><br>Bayern hat vier Nachbar-Bundesländer: Im Westen liegt Baden-Württemberg. Im Norden liegen Hessen und Thüringen. Im Nordosten liegt Sachsen.<br><br>Bayern grenzt auch an drei andere Staaten: an Österreich im Süden, an Tschechien im Osten und an die Schweiz. Die Schweiz liegt auf der anderen Seite vom Bodensee.<br><br>Bayern besteht aus sieben Teilen, den Regierungsbezirken: Oberbayern, Niederbayern, Oberpfalz, Oberfranken, Mittelfranken, Unterfranken und Schwaben.<br><br>Im Süden liegen die Alpen. Dort steht die <b>Zugspitze</b>. Sie ist 2.962 Meter hoch und der höchste Berg Deutschlands. Durch Bayern fließt die Donau. Der größte See ist der Chiemsee. Viele Menschen aus aller Welt besuchen das Schloss Neuschwanstein oder das Oktoberfest in München.",
   src:"Klexikon: Bayern · HanisauLand (bpb): Bayern",
   tasks:[
    {t:"mc",q:"Wie heißt die Hauptstadt von Bayern?",o:["Nürnberg","München","Augsburg"],a:[1]},
