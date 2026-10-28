@@ -51,9 +51,11 @@ button{font:inherit;color:inherit;cursor:pointer}
 .sheet{background:var(--paper);border-radius:6px;border:1px solid var(--line);padding:22px 24px;display:flex;flex-direction:column;gap:18px;position:relative}
 .sheet header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
 .time{background:var(--gold-soft);border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700;white-space:nowrap}
-.source{background:var(--accent-soft);border-radius:6px;padding:12px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:.98rem}
-.source .lbl{font-weight:700}
-.source a{display:inline-flex;align-items:center;gap:6px;background:var(--paper);border:2px solid var(--accent);border-radius:6px;padding:4px 12px;text-decoration:none}
+.lesetext{background:var(--accent-soft);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.lesetext .lbl{font-weight:700;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lesetext p{font-size:1.12rem;line-height:1.7;max-width:62ch}
+.quelle{font-size:.8rem;color:var(--muted)}
+.mini{background:var(--accent-soft);border-radius:6px;padding:12px 14px;font-size:1.05rem;line-height:1.65}
 .task{display:flex;flex-direction:column;gap:10px;padding-top:14px;border-top:1px dashed var(--line)}
 .task:first-of-type{border-top:0;padding-top:0}
 .task .qn{display:flex;gap:10px;align-items:baseline}
@@ -110,7 +112,7 @@ details.teacher ul{padding-left:20px;margin:8px 0}
   <header class="cover">
     <span class="eyebrow">HSU · Klasse 4 · ca. 30 Minuten</span>
     <h1>Forscherheft: Die 16 Bundesländer</h1>
-    <p>Du bist heute Deutschland-Forscherin oder Deutschland-Forscher. Auf jeder Seite steht oben ein Link zu einer Kinderseite. Öffne ihn, lies nach und beantworte die Fragen. Mit dem Knopf <b>Prüfen</b> siehst du, ob alles stimmt. Für jede fertige Seite bekommst du einen Stempel.</p>
+    <p>Du bist heute Deutschland-Forscherin oder Deutschland-Forscher. Auf jeder Seite gibt es einen kurzen Text. Lies ihn genau und beantworte dann die Fragen. Mit dem Knopf <b>Prüfen</b> siehst du, ob alles stimmt. Für jede fertige Seite bekommst du einen Stempel.</p>
     <div class="namerow"><label for="kid" class="eyebrow">Mein Name</label><input id="kid" autocomplete="off" placeholder="Name eintragen"></div>
   </header>
 
@@ -127,7 +129,7 @@ details.teacher ul{padding-left:20px;margin:8px 0}
   <details class="teacher">
     <summary>Hinweise und Lösungen für Lehrkräfte</summary>
     <ul>
-      <li><b>Quellen (alle werbefrei, für Kinder geschrieben):</b> Klexikon (Zentrum für Kinderlexika), HanisauLand (Bundeszentrale für politische Bildung). Die Antworten wurden im Oktober 2026 auf diesen Seiten geprüft.</li>
+      <li><b>Lesetexte:</b> Die kurzen Texte sind vereinfacht nach den Kinderseiten Klexikon (Zentrum für Kinderlexika) und HanisauLand (Bundeszentrale für politische Bildung) geschrieben. Die Zahlen sind von dort übernommen (Stand Oktober 2026).</li><li><b>Stolpersteine auf Seite 2:</b> Bei Hessen und Sachsen wird zuerst die größte Stadt genannt (Frankfurt, Leipzig). Die Kinder müssen also genau lesen, welche Stadt die Hauptstadt ist.</li>
       <li><b>Zeit:</b> Seite 1 ca. 5 Min · Seite 2 ca. 10 Min · Seite 3 ca. 6 Min · Seite 4 ca. 6 Min · Seite 5 ca. 3 Min.</li>
       <li><b>Seite 1:</b> 16 · Berlin, Hamburg, Bremen · 83 Millionen · Länder bestimmen selbst über Schulen.</li>
       <li><b>Seite 2:</b> BW Stuttgart · BY München · BE Berlin · BB Potsdam · HB Bremen · HH Hamburg · HE Wiesbaden · MV Schwerin · NI Hannover · NW Düsseldorf · RP Mainz · SL Saarbrücken · SN Dresden · ST Magdeburg · SH Kiel · TH Erfurt.</li>
@@ -161,39 +163,61 @@ const STATES = [
 ];
 const CAPS = STATES.map(s=>s.c).slice().sort((a,b)=>a.localeCompare(b,"de"));
 
+const INFO = {
+ SH:"In Schleswig-Holstein leben etwa 2,9 Millionen Menschen. Die Landeshauptstadt ist Kiel. Schleswig-Holstein ist das einzige Bundesland, das an zwei Meeren liegt: an der Nordsee und an der Ostsee.",
+ MV:"Die Hauptstadt von Mecklenburg-Vorpommern ist Schwerin. Dort steht das Schloss mitten in einem See. Im ganzen Land gibt es über 2.000 Seen. Hier wohnen etwa 1,6 Millionen Menschen.",
+ HB:"Bremen ist das kleinste Bundesland. Es besteht aus zwei Städten: Bremen und Bremerhaven. Die Stadt Bremen ist die Hauptstadt. Im Land Bremen leben etwa 664.000 Menschen.",
+ HH:"Hamburg ist eine Stadt und gleichzeitig ein Bundesland. Die Hauptstadt ist also Hamburg selbst. In Hamburg gibt es rund 2.500 Brücken. Hier leben etwa 1,9 Millionen Menschen.",
+ BE:"Berlin ist die Hauptstadt von Deutschland. Berlin ist aber auch ein Bundesland. Die Hauptstadt des Landes Berlin ist also Berlin. Hier leben etwa 3,8 Millionen Menschen.",
+ BB:"Brandenburg liegt rund um Berlin. Seine Hauptstadt ist aber Potsdam. In Himmelpfort gibt es sogar ein Postamt des Weihnachtsmanns. In Brandenburg leben etwa 2,5 Millionen Menschen.",
+ NW:"In Nordrhein-Westfalen leben etwa 17,9 Millionen Menschen. Das sind mehr als in jedem anderen Bundesland. Die Hauptstadt ist Düsseldorf. In Dülmen leben bis zu 400 Wildpferde.",
+ NI:"Niedersachsen ist das zweitgrößte Bundesland. Die Hauptstadt ist Hannover. Hier leben etwa 8 Millionen Menschen. Der größte See heißt Steinhuder Meer.",
+ ST:"Die Hauptstadt von Sachsen-Anhalt ist Magdeburg. Der höchste Berg im Land ist der Brocken. In Sachsen-Anhalt leben etwa 2,2 Millionen Menschen.",
+ RP:"Die Hauptstadt von Rheinland-Pfalz ist Mainz. Die Stadt Trier gilt als älteste Stadt Deutschlands. In Rheinland-Pfalz leben etwa 4,1 Millionen Menschen.",
+ HE:"In Hessen leben etwa 6,3 Millionen Menschen. Die größte Stadt ist Frankfurt am Main. Die Hauptstadt ist aber Wiesbaden. Dort gibt es heiße Quellen.",
+ TH:"Thüringen liegt mitten in Deutschland. Die Hauptstadt ist Erfurt. Die Schultüte kommt ursprünglich aus Thüringen. Hier leben etwa 2,1 Millionen Menschen.",
+ SN:"Die größte Stadt in Sachsen ist Leipzig. Die Hauptstadt ist aber Dresden. In Sachsen steht die größte Backsteinbrücke der Welt. Hier leben etwa 4,1 Millionen Menschen.",
+ SL:"Das Saarland liegt an der Grenze zu Frankreich. Die Hauptstadt ist Saarbrücken. Viele Kinder lernen hier schon in der Grundschule Französisch. Im Saarland leben etwa 980.000 Menschen.",
+ BW:"In Baden-Württemberg leben etwa 11,1 Millionen Menschen. Die Hauptstadt ist Stuttgart. Fast die Hälfte des Landes ist mit Wald bedeckt. In Ulm steht der höchste Kirchturm der Welt.",
+ BY:"Bayern ist das größte Bundesland. Die Hauptstadt ist München. Hier leben rund 13 Millionen Menschen. Auf Seite 4 erfährst du noch mehr über Bayern."
+};
+
 const PAGES = [
  {title:"Deutschland und seine Länder", min:5,
-  src:[["Klexikon: Bundesland","https://klexikon.zum.de/wiki/Bundesland"],["Klexikon: Deutschland","https://klexikon.zum.de/wiki/Deutschland"]],
+  text:"Deutschland ist in <b>16 Bundesländer</b> aufgeteilt. Jedes Bundesland hat eine eigene Regierung und eine eigene Hauptstadt. Die Bundesländer bestimmen zum Beispiel selbst über ihre Schulen. Deshalb haben nicht alle Kinder in Deutschland gleichzeitig Ferien.<br><br>Drei Bundesländer sind gleichzeitig eine Stadt: Berlin, Hamburg und Bremen. Man nennt sie <b>Stadtstaaten</b>.<br><br>In ganz Deutschland leben ungefähr 83 Millionen Menschen. Die Hauptstadt von Deutschland ist Berlin.",
+  src:"Klexikon: Bundesland, Deutschland",
   tasks:[
-   {t:"mc",q:"Aus wie vielen Bundesländern besteht Deutschland?",o:["9","12","16","20"],a:[2],hint:"Steht gleich am Anfang von „Bundesland“."},
-   {t:"multi",q:"Drei Bundesländer sind gleichzeitig eine Stadt. Man nennt sie Stadtstaaten. Kreuze alle drei an.",o:["Berlin","München","Hamburg","Köln","Bremen","Bayern"],a:[0,2,4]},
-   {t:"mc",q:"Wie viele Menschen leben ungefähr in ganz Deutschland?",o:["8 Millionen","83 Millionen","830 Millionen"],a:[1],hint:"Lies im Artikel „Deutschland“ nach."},
+   {t:"mc",q:"Aus wie vielen Bundesländern besteht Deutschland?",o:["9","12","16","20"],a:[2]},
+   {t:"multi",q:"Welche Bundesländer sind Stadtstaaten? Kreuze alle drei an.",o:["Berlin","München","Hamburg","Köln","Bremen","Bayern"],a:[0,2,4]},
+   {t:"mc",q:"Wie viele Menschen leben ungefähr in ganz Deutschland?",o:["8 Millionen","83 Millionen","830 Millionen"],a:[1]},
    {t:"mc",q:"Warum haben die Bundesländer nicht alle gleichzeitig Ferien?",o:["Weil das Wetter überall anders ist.","Weil jedes Land selbst über seine Schulen bestimmt.","Weil die Ferien ausgelost werden."],a:[1]}
   ]},
  {title:"Länder und ihre Hauptstädte", min:10, map:true,
-  src:[["HanisauLand: Die Bundesländer",HS+"Bayern"]],
-  intro:"Jedes Bundesland hat eine Hauptstadt. Klicke in der Karte auf ein Bundesland. Öffne den Steckbrief und suche die <b>Hauptstadt</b>. Wähle sie dann aus der Liste."},
+  intro:"Jedes Bundesland hat eine Hauptstadt. Klicke in der Karte auf ein Bundesland. Lies den kurzen Text und wähle die <b>Hauptstadt</b> aus der Liste. Achtung: Die größte Stadt ist nicht immer die Hauptstadt!",
+  src:"HanisauLand (bpb): Die Bundesländer"},
  {title:"Groß, klein, viele, wenige", min:6,
-  src:[["HanisauLand: Nordrhein-Westfalen",HS+"Nordrhein-Westfalen"],["HanisauLand: Bremen",HS+"Bremen"],["HanisauLand: Bayern",HS+"Bayern"]],
+  text:"Die Bundesländer sind sehr unterschiedlich. <b>Bayern</b> ist das größte Bundesland. Es hat die meiste Fläche. In Bayern leben rund 13 Millionen Menschen.<br><br>In <b>Nordrhein-Westfalen</b> ist das Land kleiner. Dafür wohnen dort viel mehr Menschen: etwa 17,9 Millionen. In <b>Berlin</b> leben etwa 3,8 Millionen Menschen.<br><br>Das kleinste Bundesland ist <b>Bremen</b>. Dort wohnen nur etwa 664.000 Menschen.",
+  src:"HanisauLand (bpb): Bayern, Nordrhein-Westfalen, Berlin, Bremen",
   tasks:[
-   {t:"mc",q:"Wie viele Einwohner hat Nordrhein-Westfalen?",o:["1,8 Millionen","17,9 Millionen","179 Millionen"],a:[1]},
-   {t:"mc",q:"Wie viele Einwohner hat Bremen ungefähr?",o:["66.000","664.000","6,6 Millionen"],a:[1]},
-   {t:"mc",q:"In welchem Bundesland leben die meisten Menschen?",o:["Bayern","Berlin","Nordrhein-Westfalen"],a:[2],hint:"Vergleiche die Einwohnerzahlen von Nordrhein-Westfalen und Bayern."},
-   {t:"mc",q:"Welches ist das kleinste Bundesland?",o:["Saarland","Bremen","Hamburg"],a:[1],hint:"Auf der Seite von Bremen steht es."},
-   {t:"mc",q:"Welches ist das größte Bundesland (nach der Fläche)?",o:["Niedersachsen","Nordrhein-Westfalen","Bayern"],a:[2],hint:"„flächenmäßig“ heißt: nach der Größe des Landes."}
+   {t:"mc",q:"Wie viele Menschen leben in Nordrhein-Westfalen?",o:["1,8 Millionen","17,9 Millionen","179 Millionen"],a:[1]},
+   {t:"mc",q:"Wie viele Menschen leben in Bremen?",o:["66.000","664.000","6,6 Millionen"],a:[1]},
+   {t:"mc",q:"In welchem Bundesland leben die meisten Menschen?",o:["Bayern","Berlin","Nordrhein-Westfalen"],a:[2],hint:"Vergleiche die drei Zahlen im Text."},
+   {t:"mc",q:"Welches ist das kleinste Bundesland?",o:["Saarland","Bremen","Hamburg"],a:[1]},
+   {t:"mc",q:"Welches ist das größte Bundesland?",o:["Niedersachsen","Nordrhein-Westfalen","Bayern"],a:[2],hint:"Groß heißt hier: Das Land hat die meiste Fläche."}
   ]},
  {title:"Unser Bundesland: Bayern", min:6,
-  src:[["Klexikon: Bayern","https://klexikon.zum.de/wiki/Bayern"]],
+  text:"Wir leben in <b>Bayern</b>. Die Hauptstadt ist München. In Bayern wohnen rund 13 Millionen Menschen.<br><br>Bayern hat vier Nachbar-Bundesländer: Im Westen liegt Baden-Württemberg. Im Norden liegen Hessen und Thüringen. Im Osten liegt Sachsen.<br><br>Bayern grenzt auch an drei andere Staaten: an Österreich im Süden, an Tschechien im Osten und an die Schweiz am Bodensee.<br><br>In den Alpen steht die <b>Zugspitze</b>. Sie ist 2.962 Meter hoch und der höchste Berg Deutschlands.",
+  src:"Klexikon: Bayern · HanisauLand (bpb): Bayern",
   tasks:[
    {t:"mc",q:"Wie heißt die Hauptstadt von Bayern?",o:["Nürnberg","München","Augsburg"],a:[1]},
    {t:"mc",q:"Wie viele Menschen leben in Bayern?",o:["rund 3 Millionen","rund 13 Millionen","rund 30 Millionen"],a:[1]},
    {t:"multi",q:"An welche Bundesländer grenzt Bayern? Kreuze alle vier an.",o:["Baden-Württemberg","Nordrhein-Westfalen","Hessen","Thüringen","Sachsen-Anhalt","Sachsen"],a:[0,2,3,5]},
-   {t:"multi",q:"An welche Länder außerhalb von Deutschland grenzt Bayern? Kreuze alle drei an.",o:["Österreich","Frankreich","Tschechien","Polen","Schweiz"],a:[0,2,4],hint:"Die Schweiz liegt am anderen Ufer vom Bodensee."},
-   {t:"mc",q:"Wie heißt der höchste Berg Deutschlands? Er steht in Bayern.",o:["Zugspitze","Brocken","Feldberg"],a:[0]}
+   {t:"multi",q:"An welche anderen Staaten grenzt Bayern? Kreuze alle drei an.",o:["Österreich","Frankreich","Tschechien","Polen","Schweiz"],a:[0,2,4]},
+   {t:"mc",q:"Wie heißt der höchste Berg Deutschlands?",o:["Zugspitze","Brocken","Feldberg"],a:[0]}
   ]},
  {title:"Mein Lieblings-Bundesland", min:3, free:true,
-  src:[["HanisauLand: Die Bundesländer",HS+"Bayern"]],
-  intro:"Such dir ein Bundesland aus, das nicht Bayern ist. Lies seinen Steckbrief und fülle den Steckbrief hier aus."}
+  intro:"Such dir ein Bundesland aus, das nicht Bayern ist. Lies den Text dazu und fülle den Steckbrief aus.",
+  src:"HanisauLand (bpb): Die Bundesländer"}
 ];
 
 /* Zustand */
@@ -209,7 +233,7 @@ function renderProgress(){
 }
 
 function srcBox(p){
-  return `<div class="source"><span class="lbl">📖 Hier liest du nach:</span>${p.src.map(s=>`<a href="${s[1]}" target="_blank" rel="noopener">${s[0]} ↗</a>`).join("")}</div>`;
+  return p.text?`<div class="lesetext"><span class="lbl">📖 Lies zuerst</span><p>${p.text}</p></div>`:"";
 }
 
 function taskHTML(pi,ti,t){
@@ -235,6 +259,7 @@ function render(){
     ${p.free?freeHTML():""}
     <button class="check" data-p="${pi}">${p.free?"Steckbrief fertig":"Prüfen"}</button>
     <div id="r${pi}" aria-live="polite"></div>
+    <p class="quelle">Texte nach: ${p.src}</p>
   </section>`).join("");
 
   book.querySelectorAll(".opts input").forEach(inp=>inp.onchange=()=>{
@@ -286,7 +311,7 @@ function drawMap(){
   const n=STATES.filter(x=>S.ans["cap-"+x.k]).length;
   document.getElementById("panel").innerHTML=`
     <span class="eyebrow">${s.k}</span><h3>${s.n}</h3>
-    <a href="${HS+s.u}" target="_blank" rel="noopener">Steckbrief ${s.n} öffnen ↗</a>
+    <p class="mini">${INFO[s.k]}</p>
     <label for="capsel">Die Hauptstadt heißt:</label>
     <select id="capsel"><option value="">– bitte wählen –</option>${CAPS.map(c=>`<option ${c===v?"selected":""}>${c}</option>`).join("")}</select>
     <p class="legend">${n} von 16 Hauptstädten eingetragen</p>
@@ -301,13 +326,16 @@ function drawMap(){
 
 /* Steckbrief */
 const FREE=[["fs-land","Bundesland"],["fs-cap","Hauptstadt"],["fs-ew","Einwohner"],["fs-spez","Das ist dort besonders"]];
+function infoFor(name){const st=STATES.find(x=>x.n===name);return st?INFO[st.k]:""}
 function freeHTML(){
-  return `<div class="steck">${FREE.map(([id,l])=>`<label for="${id}">${l}:</label>`+
-    (id==="fs-land"?`<select id="${id}"><option value="">– bitte wählen –</option>${STATES.filter(s=>s.k!=="BY").map(s=>`<option ${S.ans[id]===s.n?"selected":""}>${s.n}</option>`).join("")}</select>`
-    :`<input id="${id}" autocomplete="off" value="${(S.ans[id]||"").replace(/"/g,"&quot;")}">`)).join("")}</div>`;
+  const land=S.ans["fs-land"]||"";
+  return `<div class="steck"><label for="fs-land">Bundesland:</label><select id="fs-land"><option value="">– bitte wählen –</option>${STATES.filter(s=>s.k!=="BY").map(s=>`<option ${land===s.n?"selected":""}>${s.n}</option>`).join("")}</select></div>
+  <div class="lesetext" id="fs-info" ${land?"":"hidden"}><span class="lbl">📖 Lies zuerst</span><p id="fs-text">${infoFor(land)}</p></div>
+  <div class="steck">${FREE.slice(1).map(([id,l])=>`<label for="${id}">${l}:</label><input id="${id}" autocomplete="off" value="${(S.ans[id]||"").replace(/"/g,"&quot;")}">`).join("")}</div>`;
 }
 function bindFree(){
-  FREE.forEach(([id])=>{const el=document.getElementById(id);el.oninput=el.onchange=()=>{S.ans[id]=el.value;save()}});
+  FREE.forEach(([id])=>{const el=document.getElementById(id);el.oninput=el.onchange=()=>{S.ans[id]=el.value;save();
+    if(id==="fs-land"){const box=document.getElementById("fs-info");box.hidden=!el.value;document.getElementById("fs-text").textContent=infoFor(el.value)}}});
 }
 
 /* Prüfen */
